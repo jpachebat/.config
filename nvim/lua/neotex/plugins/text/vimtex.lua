@@ -1,11 +1,17 @@
 return {
   "lervag/vimtex",
   init = function()
-    -- Viewer settings
-    vim.g.vimtex_view_method = 'sioyek'            -- Sioyek PDF viewer for academic documents
-    -- Note: Not setting vimtex_view_sioyek_options allows VimTeX to handle window management
-    -- It will open new windows when needed but reuse for the same document
-    vim.g.vimtex_context_pdf_viewer = 'okular'     -- External PDF viewer for the Vimtex menu
+    -- Viewer settings - Skim for macOS with bidirectional SyncTeX
+    vim.g.vimtex_view_method = 'skim'              -- Skim PDF viewer (native macOS)
+    vim.g.vimtex_view_skim_sync = 1                -- Enable forward search (Neovim -> PDF)
+    vim.g.vimtex_view_skim_activate = 1            -- Activate Skim when viewing
+    vim.g.vimtex_view_skim_reading_bar = 1         -- Show reading bar in Skim
+
+    -- Note: Inverse search (PDF -> Neovim) is configured in Skim preferences:
+    -- Skim > Preferences > Sync > PDF-TeX Sync Support
+    -- Preset: Custom
+    -- Command: /opt/homebrew/bin/nvim
+    -- Arguments: --headless -c "VimtexInverseSearch %line '%file'"
 
     -- Formatting settings
     -- vim.g.vimtex_format_enabled = true             -- Enable formatting with latexindent

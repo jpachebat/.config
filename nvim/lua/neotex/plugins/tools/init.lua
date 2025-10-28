@@ -81,7 +81,7 @@ local surround_module = safe_require("neotex.plugins.tools.surround")
 local todo_comments_module = safe_require("neotex.plugins.tools.todo-comments")
 local yanky_module = safe_require("neotex.plugins.tools.yanky")
 local luasnip_module = safe_require("neotex.plugins.tools.luasnip")
-local himalaya_module = safe_require("neotex.plugins.tools.himalaya-plugin")
+-- local himalaya_module = safe_require("neotex.plugins.tools.himalaya-plugin")  -- Disabled
 local worktree_module = safe_require("neotex.plugins.tools.worktree")
 local wezterm_module = safe_require("neotex.plugins.tools.wezterm-integration")
 
@@ -108,7 +108,7 @@ add_if_valid(yanky_module)
 add_if_valid(luasnip_module)
 
 -- Himalaya returns a single spec, add it directly
-add_if_valid(himalaya_module)
+-- add_if_valid(himalaya_module)  -- Disabled
 
 -- Git worktree management
 add_if_valid(worktree_module)

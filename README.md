@@ -2,6 +2,8 @@
 
 A modern NeoVim configuration built for **AI-assisted coding**, **LaTeX typesetting**, **formal verification with Lean**, **NixOS system management**, and **multi-language development** with comprehensive LSP support and Git workflow integration.
 
+> **Note**: This configuration is forked and adapted from [benbrastmckie's NeoVim configuration](https://github.com/benbrastmckie/.config), customized for personal use with Kanagawa light theme, simplified tooling, and other modifications.
+
 ## Core Focus Areas
 
 ### 1. AI-Assisted Development
@@ -42,8 +44,6 @@ A modern NeoVim configuration built for **AI-assisted coding**, **LaTeX typesett
 **Quick Access**: `<leader>n` prefix for all NixOS operations
 
 **See**: [NIX Workflows Documentation](nvim/docs/NIX_WORKFLOWS.md)
-
-If you are interested in using NixOS, you can find my [.dotfiles](https://github.com/benbrastmckie/.dotfiles) here.
 
 ### 4. Formal Verification with Lean
 
@@ -127,16 +127,15 @@ If you are interested in using NixOS, you can find my [.dotfiles](https://github
 - **Notifications** - Unified notification system with intelligent filtering
 - **Performance** - Optimized startup and lazy-loading for fast responsiveness
 
-## Installation Guides
+## Installation
 
-Select your operating system for detailed setup instructions:
+See the [Installation Guide](nvim/docs/INSTALLATION.md) for prerequisites and setup steps.
 
-- [MacOS Installation Guide](https://github.com/benbrastmckie/.config/blob/master/docs/MacOS-Install.md)
-- [Arch Linux Installation Guide](https://github.com/benbrastmckie/.config/blob/master/docs/Arch-Install.md)
-- [Debian/Ubuntu Installation Guide](https://github.com/benbrastmckie/.config/blob/master/docs/Debian-Install.md)
-- [Windows Installation Guide](https://github.com/benbrastmckie/.config/blob/master/docs/Windows-Install.md)
-
-**Quick Start**: See [Installation Guide](nvim/docs/INSTALLATION.md) for prerequisites and setup steps.
+Platform-specific installation guides are available in the `docs/` directory:
+- MacOS Installation Guide (docs/MacOS-Install.md)
+- Arch Linux Installation Guide (docs/Arch-Install.md)
+- Debian/Ubuntu Installation Guide (docs/Debian-Install.md)
+- Windows Installation Guide (docs/Windows-Install.md)
 
 ## Configuration Structure
 
@@ -286,8 +285,7 @@ The configuration is designed for easy customization:
 ## Learning Resources
 
 - **[Neovim Configuration](nvim/README.md)** - Complete feature and keybinding reference
-- **[Git Workflow Guide](https://github.com/benbrastmckie/.config/blob/master/docs/LEARNING_GIT.md)** - Git best practices
-- **[Video Tutorials](https://www.youtube.com/watch?v=_Ct2S65kpjQ&list=PLBYZ1xfnKeDRhCoaM4bTFrjCl3NKDBvqk)** - Feature demonstrations
+- **[Git Workflow Guide](docs/LEARNING_GIT.md)** - Git best practices
 
 ## NixOS Integration
 
@@ -297,14 +295,6 @@ For NixOS users, this configuration integrates seamlessly with system management
 - Nix language server support with intelligent completion
 - Integration with home-manager for user configuration
 - Access to NixOS package search and documentation
-
-**See**: [.dotfiles Repository](https://github.com/benbrastmckie/.dotfiles) for complete NixOS configuration
-
-## Community & Support
-
-- **Issues & Features**: [GitHub Issues](https://github.com/benbrastmckie/.config/issues)
-- **Pull Requests**: Contributions welcome! See contribution guidelines
-- **Questions**: Check existing issues or open a new discussion
 
 ## License
 
