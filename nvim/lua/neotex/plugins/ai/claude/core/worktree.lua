@@ -37,6 +37,9 @@ M.config = {
   claudemd_separator = "---",     -- Markdown separator between sections
   claudemd_inherited_heading = "# Project Configuration (Inherited from Main Worktree)",
 
+  -- Suppress terminal warnings (useful when using tmux/screen)
+  suppress_terminal_warnings = true,
+
   -- Context file template
   context_template = [[
 # Worktree Task: %s
@@ -112,13 +115,15 @@ function M.setup(opts)
       vim.notify(message, vim.log.levels.WARN)
     else
       -- Generic error for non-Kitty terminals
-      vim.notify(
-        string.format(
-          "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
-          terminal_name
-        ),
-        vim.log.levels.WARN
-      )
+      if not M.config.suppress_terminal_warnings then
+        vim.notify(
+          string.format(
+            "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
+            terminal_name
+          ),
+          vim.log.levels.WARN
+        )
+      end
     end
   end
   if not has_worktree then
@@ -365,18 +370,20 @@ function M._spawn_terminal_tab(worktree_path, feature, session_id, context_file)
       notify.editor(message, notify.categories.ERROR, solution_data)
     else
       -- Generic error for non-Kitty terminals
-      notify.editor(
-        string.format(
-          "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
-          terminal_name
-        ),
-        notify.categories.ERROR,
-        {
+      if not M.config.suppress_terminal_warnings then
+        notify.editor(
+          string.format(
+            "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
+            terminal_name
+          ),
+          notify.categories.ERROR,
+          {
           terminal = terminal_name,
           required = "kitty or wezterm",
           fallback = "opening in current window"
         }
-      )
+        )
+      end
     end
 
     -- Fallback to current window (pragmatic compromise)
@@ -994,13 +1001,15 @@ function M.telescope_sessions()
               vim.notify(message, vim.log.levels.ERROR)
             else
               -- Generic error for non-Kitty terminals
-              vim.notify(
-                string.format(
-                  "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
-                  terminal_name
-                ),
-                vim.log.levels.ERROR
-              )
+              if not M.config.suppress_terminal_warnings then
+                vim.notify(
+                  string.format(
+                    "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
+                    terminal_name
+                  ),
+                  vim.log.levels.ERROR
+                )
+              end
             end
             return
           end
@@ -1373,10 +1382,15 @@ function M._spawn_restoration_tab(worktree_path, name)
       return nil, nil, message
     else
       -- Generic error for non-Kitty terminals
-      return nil, nil, string.format(
-        "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
-        terminal_name
-      )
+      if not M.config.suppress_terminal_warnings then
+        return nil, nil, string.format(
+          "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
+          terminal_name
+        )
+      else
+        -- Silently fallback without error
+        return nil, nil, nil
+      end
     end
   end
 
@@ -2083,13 +2097,15 @@ function M.claude_session_picker()
               vim.notify(message, vim.log.levels.ERROR)
             else
               -- Generic error for non-Kitty terminals
-              vim.notify(
-                string.format(
-                  "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
-                  terminal_name
-                ),
-                vim.log.levels.ERROR
-              )
+              if not M.config.suppress_terminal_warnings then
+                vim.notify(
+                  string.format(
+                    "Terminal '%s' does not support tab management. Please use Kitty (with remote control enabled) or WezTerm.",
+                    terminal_name
+                  ),
+                  vim.log.levels.ERROR
+                )
+              end
             end
             return
           end

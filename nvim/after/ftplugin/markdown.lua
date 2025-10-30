@@ -25,19 +25,92 @@ if vim.fn.expand("%:e") == "md" then
   end
 end
 
--- Apply custom markdown comment highlighting
-vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter", "ColorScheme"}, {
-  buffer = 0,
-  callback = function()
-    -- Define muted color for comments (Gruvbox gray)
-    local muted_color = "#928374"
+-- Soft-wrap settings for one-sentence-per-line workflow
+vim.opt_local.wrap = true           -- Enable line wrapping
+vim.opt_local.linebreak = true      -- Break at word boundaries
+vim.opt_local.breakindent = true    -- Preserve indentation in wrapped lines
+vim.opt_local.showbreak = ""        -- No indicator for wrapped lines
+vim.opt_local.display:append("lastline")  -- Show as much of last line as possible
 
-    -- Ensure HTML comment highlights are set
-    vim.api.nvim_set_hl(0, "htmlComment", { fg = muted_color, italic = true })
-    vim.api.nvim_set_hl(0, "htmlCommentPart", { fg = muted_color, italic = true })
-    vim.api.nvim_set_hl(0, "RenderMarkdownHtmlComment", { fg = muted_color, italic = true })
-  end
+-- Note: What you're asking for (visually joining hard line breaks into continuous text)
+-- is not natively supported by Vim/Neovim. The above settings provide soft-wrapping
+-- for long lines, but won't visually merge separate lines.
+--
+-- For true visual paragraph joining, you would need:
+-- 1. A custom plugin using extmarks/virtual text to hide newlines
+-- 2. Or use external tools like 'par' or 'fmt' to reformat (but this changes the file)
+-- 3. Or work with actual paragraphs (no line breaks between sentences)
+--
+-- Current behavior: Lines wrap at window width, but hard breaks remain visible
+
+-- Set conceallevel for markdown (required by render-markdown and obsidian.nvim)
+-- Note: Obsidian requires conceallevel 1 or 2 (not 3) to work properly
+vim.opt_local.conceallevel = 2
+vim.opt_local.concealcursor = ""   -- Always conceal, even when cursor is on line
+
+-- Apply custom markdown comment and task highlighting
+local function apply_highlighting()
+  -- Define muted color for comments (Gruvbox gray)
+  local muted_color = "#928374"
+
+  -- Ensure HTML comment highlights are set
+  vim.api.nvim_set_hl(0, "htmlComment", { fg = muted_color, italic = true })
+  vim.api.nvim_set_hl(0, "htmlCommentPart", { fg = muted_color, italic = true })
+  vim.api.nvim_set_hl(0, "RenderMarkdownHtmlComment", { fg = muted_color, italic = true })
+
+  -- Task deadline highlighting - bright red for visibility
+  vim.api.nvim_set_hl(0, "TaskDeadline", { fg = "#E82424", bold = true })
+
+  -- Custom syntax for task deadlines
+  vim.cmd([[
+    syntax clear TaskDeadline
+    syntax match TaskDeadline /@\d\{4\}-\d\{2\}-\d\{2\}/
+  ]])
+end
+
+-- Apply immediately
+apply_highlighting()
+
+-- Re-apply on events
+vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter", "ColorScheme", "Syntax"}, {
+  buffer = 0,
+  callback = apply_highlighting,
 })
+
+-- Obsidian-style wiki-link and task management keybindings
+local ok_obsidian, obsidian = pcall(require, "obsidian")
+local ok_tasks, tasks = pcall(require, "neotex.util.tasks")
+
+if ok_obsidian or ok_tasks then
+  local ok_wk, wk = pcall(require, "which-key")
+  if ok_wk then
+    local mappings = {
+      { "<leader>m", group = "markdown/notes", icon = "󰈙", buffer = 0 },
+    }
+
+    -- Add Obsidian mappings if available
+    if ok_obsidian then
+      table.insert(mappings, { "<leader>mn", "<cmd>ObsidianNew<CR>", desc = "new note", icon = "󰝒", buffer = 0 })
+      table.insert(mappings, { "<leader>mf", "<cmd>ObsidianQuickSwitch<CR>", desc = "find note", icon = "󰍉", buffer = 0 })
+      table.insert(mappings, { "<leader>ms", "<cmd>ObsidianSearch<CR>", desc = "search notes", icon = "󰺮", buffer = 0 })
+      table.insert(mappings, { "<leader>ml", "<cmd>ObsidianBacklinks<CR>", desc = "backlinks", icon = "󰌷", buffer = 0 })
+      table.insert(mappings, { "<leader>mt", "<cmd>ObsidianTags<CR>", desc = "tags", icon = "󰓹", buffer = 0 })
+      table.insert(mappings, { "<leader>md", "<cmd>ObsidianToday<CR>", desc = "daily note", icon = "󰃰", buffer = 0 })
+      table.insert(mappings, { "<leader>mT", "<cmd>ObsidianTemplate<CR>", desc = "insert template", icon = "󰈙", buffer = 0 })
+      table.insert(mappings, { "<leader>mo", "<cmd>ObsidianOpen<CR>", desc = "open in Obsidian", icon = "󰏋", buffer = 0 })
+    end
+
+    -- Add task management mappings if available
+    if ok_tasks then
+      table.insert(mappings, { "<leader>mx", function() tasks.show_tasks_telescope({vault = false}) end, desc = "tasks (file)", icon = "☐", buffer = 0 })
+      table.insert(mappings, { "<leader>mX", function() tasks.show_tasks_telescope({vault = true}) end, desc = "tasks (vault)", icon = "☐", buffer = 0 })
+      table.insert(mappings, { "<leader>mi", tasks.insert_task_with_deadline, desc = "task (full)", icon = "󰄬", buffer = 0 })
+      table.insert(mappings, { "<leader>mI", tasks.quick_insert_task, desc = "task (quick)", icon = "󰄬", buffer = 0 })
+    end
+
+    wk.add(mappings)
+  end
+end
 
 -- Markdown-specific nvim-surround configuration
 -- These surrounds are only available in markdown files

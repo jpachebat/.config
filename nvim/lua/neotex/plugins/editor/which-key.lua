@@ -18,8 +18,11 @@ TOP-LEVEL MAPPINGS (<leader>)                   | DESCRIPTION
 ----------------------------------------------------------------------------------
 <leader>c - Create vertical split               | Split window vertically
 <leader>d - Save and delete buffer              | Save file and close buffer
-<leader>e - Toggle NvimTree explorer            | Open/close file explorer
+<leader>D - Insert timestamp                    | Insert current date/time (Mon YYYY-MM-DD HH:MM)
+<leader>e - Toggle Neo-tree explorer            | Open/close visual file tree (sidebar)
+<leader>E - Open oil.nvim explorer              | Edit filesystem like text buffer
 <leader>k - Kill/close split                    | Close current split window
+<leader>o - Show document outline               | Show file outline/sections (any file type)
 <leader>q - Save all and quit                   | Save all files and exit Neovim
 <leader>u - Open Telescope undo                 | Show undo history with preview
 <leader>w - Write all files                     | Save all open files
@@ -220,7 +223,18 @@ return {
     wk.add({
       { "<leader>c", "<cmd>vert sb<CR>", desc = "create split", icon = "󰯌" },
       { "<leader>d", "<cmd>update! | lua Snacks.bufdelete()<CR>", desc = "delete buffer", icon = "󰩺" },
-      { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "explorer", icon = "󰙅" },
+      { "<leader>D", function() vim.api.nvim_put({os.date("%a %Y-%m-%d %H:%M")}, "c", true, true) end, desc = "insert timestamp", icon = "󰃰" },
+      { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "explorer (neo-tree)", icon = "󰙅" },
+      { "<leader>E", "<cmd>Oil<CR>", desc = "explorer (oil)", icon = "󰏇" },
+      { "<leader>o", function()
+        -- Try LSP document symbols first, fallback to treesitter
+        local has_lsp = #vim.lsp.get_active_clients({ bufnr = 0 }) > 0
+        if has_lsp then
+          require('telescope.builtin').lsp_document_symbols()
+        else
+          require('telescope.builtin').treesitter()
+        end
+      end, desc = "outline", icon = "󰊕" },
       { "<leader>k", "<cmd>close<CR>", desc = "kill split", icon = "󰆴" },
       { "<leader>q", "<cmd>wa! | qa!<CR>", desc = "quit", icon = "󰗼" },
       { "<leader>u", "<cmd>Telescope undo<CR>", desc = "undo", icon = "󰕌" },

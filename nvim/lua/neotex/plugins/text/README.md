@@ -10,6 +10,7 @@ text/
 ├── init.lua           # Text plugins loader
 ├── vimtex.lua         # LaTeX editing and compilation
 ├── markdown-preview.lua # Markdown live preview
+├── render-markdown.lua # Enhanced markdown rendering
 ├── lean.lua           # Lean theorem prover
 └── jupyter/           # Jupyter notebook support
     ├── README.md      # Jupyter documentation
@@ -23,6 +24,7 @@ text/
 ### Document Formats
 - **[vimtex.lua](vimtex.lua)** - Comprehensive LaTeX editing and compilation support
 - **[markdown-preview.lua](markdown-preview.lua)** - Live Markdown preview and export capabilities
+- **[render-markdown.lua](render-markdown.lua)** - Enhanced in-editor markdown rendering with minimal styling
 - **[jupyter/](jupyter/README.md)** - Jupyter notebook editing and execution within Neovim
 
 ### Programming Languages
@@ -60,6 +62,17 @@ These plugins provide enhanced editing, navigation, and visualization capabiliti
 - **Export capabilities**: PDF, HTML, and other format generation
 - **GitHub integration**: GitHub-flavored Markdown rendering
 - **Custom themes**: CSS styling and appearance customization
+
+### Markdown Rendering Features (render-markdown.lua)
+- **Minimal styling philosophy**: Clean, unobtrusive visual enhancements without distracting decorations
+- **Simple headings**: Uses plain `#` markers instead of fancy icons
+- **Clean code blocks**: No borders or language labels, just subtle padding and background
+- **Basic bullets**: Simple Unicode bullets (`•`, `◦`, `▪`, `▫`) for lists
+- **Simple checkboxes**: Clean `☐` and `☑` for task lists
+- **LaTeX support**: Inline math and equation rendering with latex2text
+- **Callout blocks**: Support for GitHub-style callouts (NOTE, TIP, WARNING, etc.)
+- **Anti-conceal**: Smart concealment that reveals syntax when cursor is nearby
+- **Optimized performance**: Debounced rendering with file size limits
 
 ## Plugin Analysis
 

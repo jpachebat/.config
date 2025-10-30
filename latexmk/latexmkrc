@@ -20,9 +20,11 @@ if ($draft_mode) {
 }
 
 # Build Directory
-# Isolates build artifacts from source files
-$out_dir = 'build';
-$aux_dir = 'build';
+# NOTE: Build directories disabled for Skim SyncTeX compatibility
+# Separate build directories cause synctex path resolution issues with Skim
+# If you need a build directory, create project-specific .latexmkrc instead
+# $out_dir = 'build';
+# $aux_dir = 'build';
 
 # Auxiliary File Handling
 # Faster handling of .aux files and bibliography processing

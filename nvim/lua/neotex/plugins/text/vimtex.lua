@@ -1,5 +1,8 @@
 return {
   "lervag/vimtex",
+  dependencies = {
+    "KeitaNakamura/tex-conceal.vim",  -- LaTeX symbol concealment
+  },
   init = function()
     -- Viewer settings - Skim for macOS with bidirectional SyncTeX
     vim.g.vimtex_view_method = 'skim'              -- Skim PDF viewer (native macOS)
@@ -10,8 +13,12 @@ return {
     -- Note: Inverse search (PDF -> Neovim) is configured in Skim preferences:
     -- Skim > Preferences > Sync > PDF-TeX Sync Support
     -- Preset: Custom
-    -- Command: /opt/homebrew/bin/nvim
-    -- Arguments: --headless -c "VimtexInverseSearch %line '%file'"
+    -- Command: /opt/homebrew/bin/nvr
+    -- Arguments: --servername /tmp/nvim-latex-server.pipe --remote-silent +"%line" "%file"
+    --
+    -- Note: nvr (neovim-remote) communicates with the running nvim instance.
+    -- The server starts automatically when opening .tex files (see autocmds.lua)
+    -- using the fixed socket path: /tmp/nvim-latex-server.pipe
 
     -- Formatting settings
     -- vim.g.vimtex_format_enabled = true             -- Enable formatting with latexindent
@@ -25,7 +32,8 @@ return {
     -- Compiler settings
     vim.g.vimtex_compiler_method = 'latexmk'       -- Explicit compiler backend selection
     vim.g.vimtex_compiler_latexmk = {              -- latexmk configuration
-      build_dir = 'build',                         -- Build artifacts directory
+      -- build_dir removed for Skim SyncTeX compatibility
+      -- Build directory breaks synctex path resolution with Skim
       options = {
         '-xelatex',                                -- Use XeLaTeX engine
         '-interaction=nonstopmode',                -- Don't stop on errors

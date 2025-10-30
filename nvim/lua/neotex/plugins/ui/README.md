@@ -21,7 +21,7 @@ ui/
 - **neo-tree.lua**: Modern file explorer with custom delete confirmation
 - **lualine.lua**: Configurable status line with sections and themes
 - **bufferline.lua**: Tab-like buffer navigation with visual indicators
-- **colorscheme.lua**: Theme configuration and color scheme management
+- **colorscheme.lua**: Kanagawa theme with custom Python/LaTeX/Markdown syntax highlighting
 - **nvim-web-devicons.lua**: File type icons for better visual distinction
 - **sessions.lua**: Session management for workspace persistence
 
@@ -116,6 +116,43 @@ Both bugs have been fixed at their source. See:
 - Path-agnostic protection for all normal files
 
 See implementation details in [sessions.lua:64-84](sessions.lua) and historical investigation in [specs/reports/037_debug_gitignored_buffer_disappearance.md](../../../specs/reports/037_debug_gitignored_buffer_disappearance.md).
+
+### Color Scheme (Kanagawa Lotus)
+The configuration uses the **Kanagawa** theme in light mode (lotus variant) with extensive customizations for improved readability and syntax highlighting.
+
+**Theme philosophy:**
+- Light background (`#F2ECBC`) with high-contrast text for reduced eye strain
+- Semantic color coding: distinct colors for different code elements
+- Enhanced support for Python, LaTeX, and Markdown
+
+**Python syntax highlighting:**
+- **Keywords** (if, for, while): Deep purple `#7E2F92` with bold
+- **Function definitions**: Deep blue `#0A3D6B` with bold
+- **Built-in functions** (print, len): Purple `#5F2A9C` with italic
+- **Strings**: Dark green `#1F6B2E` for clarity
+- **Numbers/Constants**: Orange-red `#A53500`
+- **Decorators**: Orange-red `#A53500`
+- **Exceptions**: Red `#B82020` with bold
+- **Import statements**: Red `#B82020` to stand out
+
+**LaTeX syntax highlighting:**
+- High-contrast colors optimized for light backgrounds
+- Commands (`\begin`, `\section`): Dark purple/red tones
+- Math environments: Distinct purple/brown coloring
+- Comments: Muted gray `#757575`
+
+**Markdown enhancements:**
+- Code block backgrounds: Subtle darker beige `#E8DFA8`
+- Inline code: Orange-red text on darker background
+- Better contrast for all markdown elements
+
+**General improvements:**
+- Darker text (`#2E2E2E`) for improved readability
+- Comments visible but muted (`#6B6B6B`)
+- Consistent color palette across all languages
+- Treesitter integration for modern syntax highlighting
+
+See [colorscheme.lua](colorscheme.lua) for complete color definitions and customization options.
 
 ## Plugin Analysis
 

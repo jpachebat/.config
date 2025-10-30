@@ -85,6 +85,21 @@ function M.setup()
     command = "lua set_markdown_keymaps()",
   })
 
+  -- Start nvim server for LaTeX files (required for Skim inverse search)
+  api.nvim_create_autocmd("FileType", {
+    pattern = "tex",
+    callback = function()
+      -- Only start server if not already running
+      if vim.v.servername == "" or vim.v.servername == nil then
+        -- Use a fixed socket path that Skim can find
+        local server_addr = "/tmp/nvim-latex-server.pipe"
+        vim.fn.serverstart(server_addr)
+        -- Store the address for reference
+        vim.g.latex_server_address = server_addr
+      end
+    end,
+  })
+
   -- Handle file changes silently - suppress the "File changed on disk" messages
   api.nvim_create_autocmd("FileChangedShell", {
     pattern = "*",

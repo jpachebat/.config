@@ -6,6 +6,7 @@
 -- - lean.lua: Lean theorem prover integration
 -- - jupyter/: Jupyter notebook integration
 -- - markdown-preview.lua: Markdown preview functionality
+-- - render-markdown.lua: Enhanced markdown rendering with minimal style
 --
 -- The module uses a consistent error handling approach to ensure
 -- NeoVim starts properly even if some plugin specifications fail.
@@ -48,6 +49,7 @@ local vimtex_module = safe_require("neotex.plugins.text.vimtex")
 local lean_module = safe_require("neotex.plugins.text.lean")
 local jupyter_module = safe_require("neotex.plugins.text.jupyter")
 local markdown_preview_module = safe_require("neotex.plugins.text.markdown-preview")
+local render_markdown_module = safe_require("neotex.plugins.text.render-markdown")
 
 -- Create array of valid plugin specs
 local plugins = {}
@@ -64,6 +66,7 @@ add_if_valid(vimtex_module)
 add_if_valid(lean_module)
 add_if_valid(jupyter_module)
 add_if_valid(markdown_preview_module)
+add_if_valid(render_markdown_module)
 
 -- Return only valid plugin specs
 return plugins

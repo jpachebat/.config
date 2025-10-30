@@ -43,6 +43,7 @@ GENERAL KEYBINDINGS                            | DESCRIPTION
 <C-;>                                          | Toggle comments for current line/selection
 <S-m>                                          | Show help for word under cursor
 <C-m>                                          | Search man pages with Telescope
+-                                              | Open parent directory in oil.nvim (edit filesystem like text)
 
 ----------------------------------------------------------------------------------
 NAVIGATION KEYBINDINGS                         | DESCRIPTION
@@ -256,6 +257,9 @@ function M.setup()
   -- Terminal window management
   map("n", "<C-t>", "<cmd>ToggleTerm<CR>", { remap = true }, "Toggle terminal")
   map("t", "<C-t>", "<cmd>ToggleTerm<CR>", { remap = true }, "Toggle terminal")
+
+  -- Oil.nvim file explorer (edit filesystem like text)
+  map("n", "-", "<cmd>Oil<CR>", {}, "Open parent directory (oil)")
 
   -- Telescope-based spelling suggestions
   map("n", "<C-s>", function()
