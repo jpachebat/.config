@@ -270,6 +270,14 @@ return {
       { "<leader>am", "<cmd>AvanteModel<CR>", desc = "avante model", icon = "󰡨" },
       { "<leader>ax", "<cmd>MCPHubOpen<CR>", desc = "mcp hub", icon = "󰚩" },
 
+      -- ChatGPT commands
+      { "<leader>ag", "<cmd>ChatGPT<CR>", desc = "chatgpt", icon = "󰭹" },
+      { "<leader>aG", "<cmd>ChatGPTActAs<CR>", desc = "chatgpt act as", icon = "󰭹" },
+      { "<leader>ai", "<cmd>ChatGPTEditWithInstructions<CR>", desc = "edit with instructions", icon = "󱇧", mode = { "v" } },
+
+      -- OpenAI CLI terminal (aichat)
+      { "<leader>ao", "<cmd>OpenAIToggle<CR>", desc = "openai terminal", icon = "󰭹" },
+
       -- Lectic actions (only for .lec and .md files)
       { "<leader>al", "<cmd>Lectic<CR>", desc = "lectic run", icon = "󰊠", cond = is_lectic },
       { "<leader>al", "<cmd>LecticSubmitSelection<CR>", desc = "lectic selection", icon = "󰚟", mode = { "v" }, cond = is_lectic },

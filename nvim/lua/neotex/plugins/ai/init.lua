@@ -44,9 +44,11 @@ local plugins = {}
 -- Load AI plugin specifications
 local ai_plugins = {
   "avante",
+  "chatgpt",
   "claudecode",
   "lectic",
   "mcp-hub",
+  "openai-cli",
 }
 
 -- Load each AI plugin spec

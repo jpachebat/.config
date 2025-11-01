@@ -32,13 +32,14 @@ return {
     -- Compiler settings
     vim.g.vimtex_compiler_method = 'latexmk'       -- Explicit compiler backend selection
     vim.g.vimtex_compiler_latexmk = {              -- latexmk configuration
-      -- build_dir removed for Skim SyncTeX compatibility
-      -- Build directory breaks synctex path resolution with Skim
+      aux_dir = 'out',                             -- Auxiliary files (.aux, .log, .fls, etc.)
+      out_dir = 'out',                             -- Output files (.pdf, .synctex.gz)
+      continuous = 1,                              -- Enable continuous compilation (watch mode)
       options = {
         '-xelatex',                                -- Use XeLaTeX engine
         '-interaction=nonstopmode',                -- Don't stop on errors
         '-file-line-error',                        -- Better error messages
-        '-synctex=1',                              -- Enable SyncTeX
+        '-synctex=1',                              -- Enable SyncTeX for forward/backward search
       },
     }
 

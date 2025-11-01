@@ -20,6 +20,7 @@ if ($draft_mode) {
 }
 
 # Build Directory
+$out_dir = 'out';
 # NOTE: Build directories disabled for Skim SyncTeX compatibility
 # Separate build directories cause synctex path resolution issues with Skim
 # If you need a build directory, create project-specific .latexmkrc instead

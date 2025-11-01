@@ -181,7 +181,7 @@ return {
         light = "lotus"
       },
     })
-    vim.opt.background = "light" -- Set background to light
+    vim.opt.background = "dark" -- Set background to dark
     vim.cmd("colorscheme kanagawa") -- setup must be called before loading
   end,
 }
