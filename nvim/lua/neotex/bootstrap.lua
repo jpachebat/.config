@@ -126,6 +126,11 @@ local function setup_lazy()
         { import = "neotex.plugins" },    -- main plugins directory
         { import = "neotex.plugins.lsp" }, -- lsp plugins directory
       }, {
+        -- Configure git for old versions (disable --filter option)
+        git = {
+          filter = false,  -- Disable --filter=blob:none for old git
+          url_format = "https://github.com/%s.git",
+        },
         install = {
           colorscheme = { "gruvbox" },
         },
@@ -169,6 +174,11 @@ local function setup_lazy()
         -- Phase 4 imports
         -- { import = "neotex.plugins.ai" },      -- AI tooling plugins (loaded explicitly above)
       }, {
+        -- Configure git for old versions (disable --filter option)
+        git = {
+          filter = false,  -- Disable --filter=blob:none for old git
+          url_format = "https://github.com/%s.git",
+        },
         install = {
           colorscheme = { "gruvbox" },
         },
