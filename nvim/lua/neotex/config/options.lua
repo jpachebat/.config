@@ -64,7 +64,7 @@ function M.setup()
     -- EDIT
     spell = true,                   -- turns on spellchecker
     spelllang = { 'en_us', 'fr' },  -- sets spelling dictionary (English + French)
-    clipboard = "unnamedplus",      -- allows neovim to access the system clipboard
+    clipboard = vim.env.SSH_TTY and "" or "unnamedplus",  -- disable clipboard on SSH, enable locally
     mouse = "a",                    -- allow the mouse to be used in neovim
     mousescroll = "ver:2,hor:4",    -- change the speed of the scroll wheel
     ignorecase = true,              -- ignore case in search patterns
@@ -168,7 +168,30 @@ function M.setup()
   -- Limit jumplist to improve performance
   vim.opt.jumpoptions = "stack"
   vim.opt.shada = "!,'100,<50,s10,h"
-  
+
+  -- OSC 52 clipboard support for SSH/tmux environments
+  -- This allows copying to local clipboard over SSH
+  if vim.env.SSH_TTY or vim.env.TMUX then
+    local function paste()
+      return {
+        vim.fn.split(vim.fn.getreg(""), "\n"),
+        vim.fn.getregtype(""),
+      }
+    end
+
+    vim.g.clipboard = {
+      name = "OSC 52",
+      copy = {
+        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+      },
+      paste = {
+        ["+"] = paste,
+        ["*"] = paste,
+      },
+    }
+  end
+
   return true
 end
 
