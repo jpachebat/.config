@@ -36,14 +36,40 @@ local function ensure_lazy()
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
     if not vim.loop.fs_stat(lazypath) then
       vim.notify("Installing lazy.nvim...", vim.log.levels.INFO)
-      vim.fn.system({
+
+      -- Check git version to determine if we can use --filter
+      local git_version_output = vim.fn.system("git --version")
+      local git_version = git_version_output:match("git version (%d+%.%d+)")
+      local use_filter = git_version and tonumber(git_version) >= 2.17
+
+      -- Build git command based on version
+      local git_cmd = {
         "git",
         "clone",
-        "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", -- latest stable release
-        lazypath,
-      })
+      }
+
+      -- Add --filter only if git is new enough (2.17+)
+      if use_filter then
+        table.insert(git_cmd, "--filter=blob:none")
+      end
+
+      table.insert(git_cmd, "https://github.com/folke/lazy.nvim.git")
+      table.insert(git_cmd, "--branch=stable")
+      table.insert(git_cmd, lazypath)
+
+      local result = vim.fn.system(git_cmd)
+
+      -- If clone failed and we used --filter, try without it
+      if vim.v.shell_error ~= 0 and use_filter then
+        vim.notify("Retrying without --filter (old git version)...", vim.log.levels.WARN)
+        vim.fn.system({
+          "git",
+          "clone",
+          "https://github.com/folke/lazy.nvim.git",
+          "--branch=stable",
+          lazypath,
+        })
+      end
     end
     vim.opt.rtp:prepend(lazypath)
   end, "installation of lazy.nvim")
