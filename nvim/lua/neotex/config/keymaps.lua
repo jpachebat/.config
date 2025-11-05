@@ -132,10 +132,8 @@ function M.setup()
     local is_claude = bufname:match("claude") or bufname:match("ClaudeCode")
 
     -- Terminal navigation
-    -- Skip escape mapping for Claude Code to allow its internal normal mode
-    if not is_claude then
-      buf_map(0, "t", "<esc>", "<C-\\><C-n>", "Exit terminal mode")
-    end
+    -- Map escape for all terminals including Claude
+    buf_map(0, "t", "<esc>", "<C-\\><C-n>", "Exit terminal mode")
     buf_map(0, "t", "<C-h>", "<Cmd>wincmd h<CR>", "Navigate left")
     buf_map(0, "t", "<C-j>", "<Cmd>wincmd j<CR>", "Navigate down")
     buf_map(0, "t", "<C-k>", "<Cmd>wincmd k<CR>", "Navigate up")
@@ -289,6 +287,21 @@ function M.setup()
   -- Documentation and help access
   map("n", "<S-m>", '<cmd>Telescope help_tags cword=true<cr>', {}, "Help for word under cursor")
   map("n", "<C-m>", '<cmd>Telescope man_pages<cr>', {}, "Search man pages")
+
+  --------------------------------
+  -- THEME TOGGLE             --
+  --------------------------------
+
+  -- Toggle between light and dark mode
+  map("n", "<leader>ut", function()
+    if vim.o.background == "dark" then
+      vim.o.background = "light"
+      vim.notify("Switched to light mode", vim.log.levels.INFO)
+    else
+      vim.o.background = "dark"
+      vim.notify("Switched to dark mode", vim.log.levels.INFO)
+    end
+  end, {}, "Toggle light/dark theme")
 
   --------------------------------
   -- AI/ASSISTANT GLOBAL KEYS --

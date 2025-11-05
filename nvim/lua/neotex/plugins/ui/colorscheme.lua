@@ -62,7 +62,37 @@ return {
         local theme = colors.theme
         local palette = colors.palette
 
-        -- High contrast colors for light mode
+        -- Only apply light mode overrides when in light mode
+        local is_light = vim.o.background == "light"
+
+        if not is_light then
+          -- Dark mode: fix hard-to-read elements
+          return {
+            -- Fix black/dark text that's hard to read on dark background
+            Identifier = { fg = palette.fujiWhite },        -- Variables - bright white
+            Delimiter = { fg = palette.springViolet1 },     -- Brackets/parens - violet
+            ["@variable"] = { fg = palette.fujiWhite },     -- Treesitter variables
+            ["@punctuation.bracket"] = { fg = palette.springViolet1 },
+            ["@punctuation.delimiter"] = { fg = palette.sumiInk4 },
+
+            -- Ensure text is always visible
+            Normal = { fg = palette.fujiWhite, bg = theme.ui.bg },
+            NormalNC = { fg = palette.fujiWhite, bg = theme.ui.bg_dim },
+
+            -- Comments should be visible but muted
+            Comment = { fg = palette.fujiGray, italic = true },
+
+            -- UI elements with better contrast
+            LineNr = { fg = palette.fujiGray },  -- Visible gray for line numbers
+            CursorLineNr = { fg = palette.roninYellow, bold = true },
+
+            -- Make sure special chars are visible
+            SpecialChar = { fg = palette.sakuraPink },
+            Special = { fg = palette.springViolet2 },
+          }
+        end
+
+        -- High contrast colors for light mode only
         return {
           -- LaTeX Commands - dark, saturated colors for visibility
           texStatement = { fg = "#7E3992", bold = true },               -- \begin, \end - dark purple
@@ -174,15 +204,39 @@ return {
           Debug = { fg = "#B82020" },                                   -- Debug - red
         }
       end,
-      theme = "lotus", -- Load "lotus" theme (light mode)
+      theme = "wave", -- Load "wave" theme (will switch based on background option)
       background = {
         -- map the value of 'background' option to a theme
         dark = "wave", -- try "dragon" !
         light = "lotus"
       },
     })
-    vim.opt.background = "dark" -- Set background to dark
+
+    -- Auto-detect theme based on time of day
+    local function set_theme_by_time()
+      local hour = tonumber(os.date("%H"))
+
+      -- Light mode: 7 AM to 7 PM (7-19)
+      -- Dark mode: 7 PM to 7 AM (19-7)
+      if hour >= 7 and hour < 19 then
+        vim.opt.background = "light"
+      else
+        vim.opt.background = "dark"
+      end
+    end
+
+    -- Set initial theme based on current time
+    set_theme_by_time()
+
     vim.cmd("colorscheme kanagawa") -- setup must be called before loading
+
+    -- Ensure time-based theme is applied after everything loads
+    vim.api.nvim_create_autocmd("VimEnter", {
+      callback = function()
+        set_theme_by_time()
+      end,
+      once = true,
+    })
   end,
 }
 

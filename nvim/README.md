@@ -559,7 +559,7 @@ By default, debug messages are hidden to keep your Neovim experience clean. If y
    :lua vim.notify_level = vim.log.levels.DEBUG
    ```
 
-2. **View even more verbose messages** (including trace level):
+§. **View even more verbose messages** (including trace level):
    ```lua
    :lua vim.notify_level = vim.log.levels.TRACE
    ```

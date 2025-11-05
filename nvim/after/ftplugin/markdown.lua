@@ -112,9 +112,43 @@ if ok_obsidian or ok_tasks then
   end
 end
 
+-- Setup markdown anchor navigation (for TOC links)
+local markdown_nav = require("neotex.util.markdown-nav")
+
+-- Use <CR> (Enter) on TOC links instead of gf to avoid conflicts
+vim.keymap.set("n", "<CR>", markdown_nav.follow_anchor, {
+  buffer = true,
+  desc = "Follow markdown anchor"
+})
+
+-- Also keep gf but with higher priority
+vim.keymap.set("n", "gf", markdown_nav.follow_anchor, {
+  buffer = true,
+  desc = "Follow markdown anchor",
+  silent = true,
+})
+
 -- Markdown-specific nvim-surround configuration
 -- These surrounds are only available in markdown files
-require("nvim-surround").buffer_setup({
+-- Use vim.schedule to ensure this runs after all plugins are loaded
+vim.schedule(function()
+  local ok, surround = pcall(require, "nvim-surround")
+  if not ok then
+    return
+  end
+
+  surround.buffer_setup({
+  -- Explicitly disable aliases that conflict with our custom surrounds
+  aliases = {
+    a = ">",
+    r = "]",
+    q = { '"', "'", "`" },
+    s = { "}", "]", ")", ">", '"', "'", "`" },
+    -- Explicitly set b and i to false to disable the aliases
+    b = false,
+    i = false,
+    B = "}",  -- Keep this one
+  },
   surrounds = {
     -- Bold: **text** (double asterisk for strong emphasis)
     ["b"] = {
@@ -155,5 +189,6 @@ require("nvim-surround").buffer_setup({
       delete = "^(~~)().-(~~)()$",
     },
   },
-})
+  })
+end)
 

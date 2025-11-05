@@ -67,30 +67,14 @@ return {
       highlight = 'RenderMarkdownDash',
     },
     bullet = {
-      enabled = true,
+      -- Only render bullets for * and +, not for - (conflicts with checkboxes)
       icons = { '•', '◦', '▪', '▫' },
       left_pad = 0,
-      right_pad = 1,
-      highlight = 'RenderMarkdownBullet',
+      right_pad = 0,
     },
     checkbox = {
-      enabled = true,
+      -- Use defaults but ensure proper positioning
       position = 'overlay',
-      unchecked = {
-        icon = '☐ ',
-        highlight = 'RenderMarkdownUnchecked',
-        scope_highlight = nil,
-      },
-      checked = {
-        icon = '☑ ',
-        highlight = 'RenderMarkdownChecked',
-        scope_highlight = nil,
-      },
-      custom = {
-        todo = { raw = '[-]', rendered = '◐ ', highlight = 'RenderMarkdownTodo' },
-        progress = { raw = '[.]', rendered = '◔ ', highlight = 'RenderMarkdownProgress' },
-        closing = { raw = '[:]', rendered = '◕ ', highlight = 'RenderMarkdownClosing' },
-      },
     },
     quote = {
       enabled = true,

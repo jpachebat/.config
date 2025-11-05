@@ -2,7 +2,14 @@
 -- LaTeX-specific surround configurations are in lua/neotex/plugins/coding/surround.lua
 
 -- This file includes buffer-specific surround configuration
-require("nvim-surround").buffer_setup({
+-- Use vim.schedule to ensure this runs after all plugins are loaded
+vim.schedule(function()
+  local ok, surround = pcall(require, "nvim-surround")
+  if not ok then
+    return
+  end
+
+  surround.buffer_setup({
   surrounds = {
     -- LaTeX environments
     ["e"] = {
@@ -43,7 +50,8 @@ require("nvim-surround").buffer_setup({
       add = { "$", "$" },
     },
   },
-})
+  })
+end)
 
 -- PdfAnnots
 function PdfAnnots()
@@ -82,7 +90,7 @@ vim.opt_local.display:append("lastline")  -- Show as much of last line as possib
 
 -- LaTeX concealment settings (tex-conceal.vim)
 vim.opt_local.conceallevel = 2  -- Enable concealment (0=off, 2=on with cursor reveal)
-vim.opt_local.concealcursor = "n"  -- Show actual text when cursor is on the line (in normal mode)
+vim.opt_local.concealcursor = ""  -- Always show concealed text when cursor is on line
 
 -- Configure tex-conceal.vim symbols
 vim.g.tex_conceal = "abdmgs"  -- Enable conceal for:
@@ -159,6 +167,14 @@ vim.cmd([[
   syntax match texCiteAltBrace contained "}" conceal
   syntax match texCiteAltKey contained "[^{}]\+"
   highlight link texCiteAltKey Identifier
+
+  " Prevent spacing commands from being concealed
+  syntax match texSpaceCmd "\\vspace\*\?{[^}]\+}" contains=NONE
+  syntax match texSpaceCmd "\\hspace\*\?{[^}]\+}" contains=NONE
+  syntax match texSpaceCmd "\\vskip[^}]\+" contains=NONE
+  syntax match texSpaceCmd "\\smallskip" contains=NONE
+  syntax match texSpaceCmd "\\medskip" contains=NONE
+  syntax match texSpaceCmd "\\bigskip" contains=NONE
 ]])
 
 -- Toggle concealment function
