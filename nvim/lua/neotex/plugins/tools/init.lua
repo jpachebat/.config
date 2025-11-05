@@ -84,6 +84,7 @@ local luasnip_module = safe_require("neotex.plugins.tools.luasnip")
 -- local himalaya_module = safe_require("neotex.plugins.tools.himalaya-plugin")  -- Disabled
 local worktree_module = safe_require("neotex.plugins.tools.worktree")
 local wezterm_module = safe_require("neotex.plugins.tools.wezterm-integration")
+local osc52_module = safe_require("neotex.plugins.tools.osc52")
 
 -- Create array of valid plugin specs
 local plugins = {}
@@ -115,6 +116,9 @@ add_if_valid(worktree_module)
 
 -- WezTerm integration
 add_if_valid(wezterm_module)
+
+-- OSC52 clipboard for SSH/remote environments
+add_if_valid(osc52_module)
 
 -- Return only valid plugin specs
 return plugins
