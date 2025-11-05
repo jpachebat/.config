@@ -9,10 +9,7 @@
 return {
   "ojroques/nvim-osc52",
   event = "VeryLazy",
-  cond = function()
-    -- Only load on SSH connections
-    return vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
-  end,
+  -- Always load - the plugin will only be useful on SSH anyway
   config = function()
     require('osc52').setup({
       max_length = 0,           -- Maximum length of selection (0 for no limit)
