@@ -16,7 +16,7 @@ A modern NeoVim configuration built for **AI-assisted coding**, **LaTeX typesett
 - **MCP Hub** - Model Context Protocol integration for extended AI capabilities
 - **Git Worktrees + OpenCode** - Parallel AI-assisted development across multiple branches
 
-**Quick Access**: `<leader>aa` (Avante), `<C-c>` (Claude Code), `<leader>ml` (Lectic)
+**Quick Access**: `<leader>aa` (Avante), `<C-c><C-c>` / `<C-c>` in Claude terminal (Claude Code), `<leader>ml` (Lectic)
 
 ### 2. Professional LaTeX Typesetting
 
@@ -213,7 +213,7 @@ Every directory includes a README with detailed module documentation:
 | Category | Key | Action |
 |----------|-----|--------|
 | **AI** | `<leader>aa` | Open Avante AI chat |
-| | `<C-c>` | Toggle Claude Code |
+| | `<C-c><C-c>` / `<C-c>` in Claude terminal | Toggle Claude Code |
 | | `<leader>ml` | Lectic markdown AI |
 | **Files** | `<C-p>` | Find files (Telescope) |
 | | `<leader>sg` | Search text in project |

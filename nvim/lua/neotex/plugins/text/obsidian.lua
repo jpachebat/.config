@@ -11,8 +11,8 @@ return {
     -- Specify your vault location(s)
     workspaces = {
       {
-        name = "personal",
-        path = "/Users/jeanpachebat/jpachebat@gmail.com - Google Drive/My Drive/notes/perso",
+        name = "work",
+        path = "~/work/notes",
       },
       -- Add more vaults if needed:
       -- {

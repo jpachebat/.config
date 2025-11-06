@@ -251,6 +251,7 @@ return {
       { "<leader>a", group = "ai", icon = "󰚩", mode = { "n", "v" } },
 
       -- Claude AI commands
+      { "<leader>aT", function() require("neotex.plugins.ai.claude").smart_toggle() end, desc = "toggle claude", icon = "󰔡", mode = { "n", "v" } },
       { "<leader>ac", "<cmd>ClaudeCommands<CR>", desc = "claude commands", icon = "󰘳" },
       { "<leader>ac",
         function() require("neotex.plugins.ai.claude.core.visual").send_visual_to_claude_with_prompt() end,

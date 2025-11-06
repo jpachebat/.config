@@ -27,12 +27,18 @@ return {
       end
     })
 
-    -- Manual copy keybindings (only when SSH'd)
-    vim.keymap.set('n', '<leader>c', require('osc52').copy_operator, {expr = true, desc = "Copy to local (OSC52)"})
-    vim.keymap.set('n', '<leader>cc', '<leader>c_', {remap = true, desc = "Copy line to local"})
-    vim.keymap.set('v', '<leader>c', require('osc52').copy_visual, {desc = "Copy selection to local"})
+    local is_remote = vim.env.SSH_TTY ~= nil
+      or vim.env.SSH_CONNECTION ~= nil
+      or vim.env.SSH_CLIENT ~= nil
 
-    -- Also make y copy to local clipboard
-    vim.keymap.set('v', 'y', require('osc52').copy_visual, {desc = "Yank to local clipboard"})
+    -- Manual copy keybindings (when working over SSH)
+    if is_remote then
+      vim.keymap.set('n', '<leader>c', require('osc52').copy_operator, {expr = true, desc = "Copy to local (OSC52)"})
+      vim.keymap.set('n', '<leader>cc', '<leader>c_', {remap = true, desc = "Copy line to local"})
+      vim.keymap.set('v', '<leader>c', require('osc52').copy_visual, {desc = "Copy selection to local"})
+
+      -- Override visual-mode y only for remote sessions
+      vim.keymap.set('v', 'y', require('osc52').copy_visual, {desc = "Yank to local clipboard"})
+    end
   end,
 }

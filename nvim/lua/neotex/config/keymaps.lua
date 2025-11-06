@@ -20,7 +20,7 @@ Organization:
 ----------------------------------------------------------------------------------
 AI/ASSISTANT GLOBAL KEYBINDINGS                | DESCRIPTION
 ----------------------------------------------------------------------------------
-<C-c>                                          | Toggle Claude Code (overridden in Avante/Telescope)
+<C-c><C-c>                                     | Toggle Claude Code
 <C-g>                                          | Toggle Avante interface (all modes)
 
 ----------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ O                                              | Create new bullet point above
 dd                                             | Delete line and recalculate list numbers
 d (visual mode)                                | Delete selection and recalculate numbers
 <C-n>                                          | Toggle checkbox status ([ ] ↔ [x])
-<C-c>                                          | Toggle Claude Code (global binding, not autolist)
+<C-c><C-c>                                     | Toggle Claude Code (global binding, not autolist)
 
 ----------------------------------------------------------------------------------
 AVANTE AI BUFFER KEYBINDINGS                   | DESCRIPTION
@@ -134,6 +134,9 @@ function M.setup()
     -- Terminal navigation
     -- Map escape for all terminals including Claude
     buf_map(0, "t", "<esc>", "<C-\\><C-n>", "Exit terminal mode")
+    if is_claude then
+      buf_map(0, "t", "<C-c>", "<C-\\><C-n><cmd>lua require('neotex.plugins.ai.claude').smart_toggle()<CR>", "Toggle Claude Code")
+    end
     buf_map(0, "t", "<C-h>", "<Cmd>wincmd h<CR>", "Navigate left")
     buf_map(0, "t", "<C-j>", "<Cmd>wincmd j<CR>", "Navigate down")
     buf_map(0, "t", "<C-k>", "<Cmd>wincmd k<CR>", "Navigate up")
@@ -307,23 +310,14 @@ function M.setup()
   -- AI/ASSISTANT GLOBAL KEYS --
   --------------------------------
 
-  -- Claude Code toggle (smart session management)
-  -- Note: This global mapping is overridden by buffer-local mappings in:
+  -- Claude Code toggle (double Ctrl-c keeps single Ctrl-c free for Escape)
+  -- Note: This sequence is overridden by buffer-local mappings in:
   --   - Avante buffers (<C-c> clears chat history)
   --   - Telescope pickers (<C-c> closes picker)
-  map("n", "<C-c>", function()
+  map({ "n", "v" }, "<C-c><C-c>", function()
     require("neotex.plugins.ai.claude").smart_toggle()
   end, {}, "Toggle Claude Code")
-
-  map("i", "<C-c>", function()
-    require("neotex.plugins.ai.claude").smart_toggle()
-  end, {}, "Toggle Claude Code")
-
-  map("v", "<C-c>", function()
-    require("neotex.plugins.ai.claude").smart_toggle()
-  end, {}, "Toggle Claude Code")
-
-  map("t", "<C-c>", function()
+  map({ "n", "v" }, "<leader>aT", function()
     require("neotex.plugins.ai.claude").smart_toggle()
   end, {}, "Toggle Claude Code")
 
@@ -357,6 +351,21 @@ function M.setup()
   map("n", "<A-Right>", ":vertical resize +2<CR>", {}, "Increase width")
   map("n", "<A-h>", ":vertical resize -2<CR>", {}, "Decrease width")
   map("n", "<A-l>", ":vertical resize +2<CR>", {}, "Increase width")
+
+  -- macOS-style insert-mode text editing (requires terminal to send Option/Command)
+  local mac_insert_maps = {
+    { lhs = "<A-BS>", rhs = "<C-w>", desc = "Delete word left" },
+    { lhs = "<A-Del>", rhs = "<C-o>dw", desc = "Delete word right" },
+    { lhs = "<D-BS>", rhs = "<C-u>", desc = "Delete to line start" },
+    { lhs = "<D-Del>", rhs = "<C-o>dd", desc = "Delete line" },
+    { lhs = "<A-Left>", rhs = "<C-o>b", desc = "Move one word left" },
+    { lhs = "<A-Right>", rhs = "<C-o>w", desc = "Move one word right" },
+    { lhs = "<D-Left>", rhs = "<C-o>^", desc = "Jump to line start" },
+    { lhs = "<D-Right>", rhs = "<C-o>$", desc = "Jump to line end" },
+  }
+  for _, entry in ipairs(mac_insert_maps) do
+    map("i", entry.lhs, entry.rhs, {}, entry.desc)
+  end
 
   -- Smart buffer navigation with fallback chain
   local buffer_utils_loaded = false

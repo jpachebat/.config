@@ -211,32 +211,7 @@ return {
         light = "lotus"
       },
     })
-
-    -- Auto-detect theme based on time of day
-    local function set_theme_by_time()
-      local hour = tonumber(os.date("%H"))
-
-      -- Light mode: 7 AM to 7 PM (7-19)
-      -- Dark mode: 7 PM to 7 AM (19-7)
-      if hour >= 7 and hour < 19 then
-        vim.opt.background = "light"
-      else
-        vim.opt.background = "dark"
-      end
-    end
-
-    -- Set initial theme based on current time
-    set_theme_by_time()
-
-    vim.cmd("colorscheme kanagawa") -- setup must be called before loading
-
-    -- Ensure time-based theme is applied after everything loads
-    vim.api.nvim_create_autocmd("VimEnter", {
-      callback = function()
-        set_theme_by_time()
-      end,
-      once = true,
-    })
+    require("neotex.util.theme").setup()
   end,
 }
 
