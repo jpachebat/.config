@@ -1,0 +1,37 @@
+# Tmux 1.8 compatible config for cholesky cluster
+
+set-option -g history-limit 25000
+
+# change prefix from C-b to C-Space
+unbind C-b
+set -g prefix C-Space
+bind C-Space send-prefix
+
+# reduce escape time for neovim
+set -sg escape-time 10
+
+# vi for copy mode
+setw -g mode-keys vi
+
+# status bar
+set -g status-fg colour246
+set -g status-bg default
+set -g status-interval 1
+set -g status-left ""
+set -g status-right ""
+
+# count windows/panes from 1
+set -g base-index 1
+setw -g pane-base-index 1
+
+# reload configuration
+bind-key r source-file ~/.tmux.conf \; display-message "Config reloaded!"
+
+# term colors
+set-option -g default-terminal "screen-256color"
+
+# Mouse support for tmux 1.8
+set -g mode-mouse on
+set -g mouse-resize-pane on
+set -g mouse-select-pane on
+set -g mouse-select-window on
