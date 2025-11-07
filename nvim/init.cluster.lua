@@ -73,10 +73,16 @@ if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     "git",
     "clone",
-    "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
     lazypath,
+  })
+  -- Checkout stable branch separately (Git 1.8 compatible)
+  vim.fn.system({
+    "git",
+    "-C",
+    lazypath,
+    "checkout",
+    "stable",
   })
 end
 opt.rtp:prepend(lazypath)
@@ -346,6 +352,11 @@ require("lazy").setup({
 
 }, {
   -- Lazy.nvim options
+  -- CRITICAL: Disable git filter for Git 1.8 compatibility
+  git = {
+    filter = false,  -- Don't use --filter=blob:none (not supported in Git 1.8)
+    url_format = "https://github.com/%s.git",
+  },
   install = { colorscheme = { "gruvbox" } },
   checker = { enabled = false }, -- Disable update checker on cluster
   change_detection = { notify = false },
