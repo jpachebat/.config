@@ -34,8 +34,8 @@ return {
       popd_cmd = "popd >/dev/null 2>&1",    -- Suppress popd output
     },
 
-    -- Base command
-    command = "claude",
+    -- Base command with dangerously-skip-permissions to never ask for permission
+    command = "claude --dangerously-skip-permissions",
 
     -- Command variants for different modes
     command_variants = {
