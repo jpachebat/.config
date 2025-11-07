@@ -20,13 +20,15 @@ Organization:
 ----------------------------------------------------------------------------------
 AI/ASSISTANT GLOBAL KEYBINDINGS                | DESCRIPTION
 ----------------------------------------------------------------------------------
-<C-c><C-c>                                     | Toggle Claude Code
+<C-c>                                          | Toggle Claude Code
 <C-g>                                          | Toggle Avante interface (all modes)
 
 ----------------------------------------------------------------------------------
 TERMINAL MODE KEYBINDINGS                      | DESCRIPTION
 ----------------------------------------------------------------------------------
-<Esc>                                          | Exit terminal mode to normal mode
+<Esc>                                          | Exit terminal mode (non-Claude terminals)
+                                               | In Claude: Pass to CLI (stop execution)
+<C-c>                                          | In Claude: Toggle Claude window
 <C-t>                                          | Toggle terminal window
 <C-h>, <C-j>, <C-k>, <C-l>                     | Navigate between windows
 <M-h>, <M-l>, <M-Left>, <M-Right>              | Resize terminal window horizontally
@@ -76,7 +78,7 @@ O                                              | Create new bullet point above
 dd                                             | Delete line and recalculate list numbers
 d (visual mode)                                | Delete selection and recalculate numbers
 <C-n>                                          | Toggle checkbox status ([ ] ↔ [x])
-<C-c><C-c>                                     | Toggle Claude Code (global binding, not autolist)
+<C-c>                                          | Toggle Claude Code (global binding, not autolist)
 
 ----------------------------------------------------------------------------------
 AVANTE AI BUFFER KEYBINDINGS                   | DESCRIPTION
@@ -131,12 +133,22 @@ function M.setup()
     local bufname = vim.api.nvim_buf_get_name(0)
     local is_claude = bufname:match("claude") or bufname:match("ClaudeCode")
 
-    -- Terminal navigation
-    -- Map escape for all terminals including Claude
-    buf_map(0, "t", "<esc>", "<C-\\><C-n>", "Exit terminal mode")
     if is_claude then
+      -- <C-c> in terminal mode toggles Claude window
       buf_map(0, "t", "<C-c>", "<C-\\><C-n><cmd>lua require('neotex.plugins.ai.claude').smart_toggle()<CR>", "Toggle Claude Code")
+
+      -- <Esc> passes through to Claude CLI (for stopping execution)
+      buf_map(0, "t", "<esc>", "<esc>", "Send Esc to Claude CLI")
+
+      -- <C-c> in normal mode also toggles Claude window
+      vim.keymap.set("n", "<C-c>", function()
+        require("neotex.plugins.ai.claude").smart_toggle()
+      end, { buffer = 0, noremap = true, silent = true, desc = "Toggle Claude Code" })
+    else
+      -- For non-Claude terminals, map escape to exit terminal mode
+      buf_map(0, "t", "<esc>", "<C-\\><C-n>", "Exit terminal mode")
     end
+
     buf_map(0, "t", "<C-h>", "<Cmd>wincmd h<CR>", "Navigate left")
     buf_map(0, "t", "<C-j>", "<Cmd>wincmd j<CR>", "Navigate down")
     buf_map(0, "t", "<C-k>", "<Cmd>wincmd k<CR>", "Navigate up")
@@ -147,8 +159,6 @@ function M.setup()
     buf_map(0, "t", "<M-Left>", "<Cmd>vertical resize +2<CR>", "Resize left")
     buf_map(0, "t", "<M-l>", "<Cmd>vertical resize -2<CR>", "Resize right")
     buf_map(0, "t", "<M-h>", "<Cmd>vertical resize +2<CR>", "Resize left")
-
-    -- Note: AI keybindings (C-c for Claude Code, C-g for Avante) are defined globally in this file
   end
 
   -- Markdown-specific keybindings (called by markdown filetype autocmd)
@@ -310,11 +320,12 @@ function M.setup()
   -- AI/ASSISTANT GLOBAL KEYS --
   --------------------------------
 
-  -- Claude Code toggle (double Ctrl-c keeps single Ctrl-c free for Escape)
-  -- Note: This sequence is overridden by buffer-local mappings in:
+  -- Claude Code toggle with single Ctrl-c
+  -- Note: This overrides default Ctrl-c behavior (similar to Escape)
+  -- Buffer-local mappings can still override this in specific contexts:
   --   - Avante buffers (<C-c> clears chat history)
   --   - Telescope pickers (<C-c> closes picker)
-  map({ "n", "v" }, "<C-c><C-c>", function()
+  map({ "n", "v" }, "<C-c>", function()
     require("neotex.plugins.ai.claude").smart_toggle()
   end, {}, "Toggle Claude Code")
   map({ "n", "v" }, "<leader>aT", function()

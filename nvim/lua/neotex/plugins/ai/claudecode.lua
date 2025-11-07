@@ -35,7 +35,7 @@ return {
     },
 
     -- Base command
-    command = "claude --dangerously-skip-permissions",
+    command = "claude",
 
     -- Command variants for different modes
     command_variants = {
