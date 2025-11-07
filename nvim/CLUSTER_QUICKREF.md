@@ -3,14 +3,13 @@
 ## Quick Start
 
 ```bash
-# Setup (choose one method)
-cd ~/.config/nvim
-./setup-cluster.sh
-
-# Or manually:
-export NVIM_APPNAME=nvim-cluster
-mkdir -p ~/.config/nvim-cluster
-cp ~/.config/nvim/init.cluster.lua ~/.config/nvim-cluster/init.lua
+# Complete setup in 6 commands
+git clone https://github.com/jpachebat/.config.git ~/.config
+cd ~/.config
+git checkout cluster-simple-config
+git branch --set-upstream-to=origin/cluster-simple-config cluster-simple-config
+cd nvim && ln -s init.cluster.lua init.lua
+nvim  # Auto-installs everything on first launch
 ```
 
 ## Essential Keybindings
@@ -90,12 +89,27 @@ cp ~/.config/nvim/init.cluster.lua ~/.config/nvim-cluster/init.lua
 
 ## Troubleshooting
 
+### Connection dropped during install
+**Don't worry!** Just relaunch nvim - lazy.nvim will resume where it left off:
+```bash
+nvim  # Continues installation
+# Or force sync: :Lazy sync
+```
+
+### Git 1.8 compatibility errors
+If you see "error: unknown option `filter=blob:none`":
+- Ensure you're on `cluster-simple-config` branch
+- This fix is already in `init.cluster.lua` lines 356-359
+
 ### Plugins won't install
 ```bash
 # Check network
 ping github.com
 
-# Manual install
+# Verify git version (need 1.8+)
+git --version
+
+# Manual lazy.nvim install
 cd ~/.local/share/nvim/lazy
 git clone https://github.com/folke/lazy.nvim.git
 ```

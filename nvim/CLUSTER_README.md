@@ -25,50 +25,56 @@ This is a simplified Neovim configuration designed for cluster systems with olde
 
 ## Installation on Cluster
 
-### Option 1: Use NVIM_APPNAME (Recommended)
+### Step-by-Step Setup (Recommended)
 
-This allows you to keep both configs side by side:
-
-```bash
-# On your cluster, create a separate config directory
-export NVIM_APPNAME=nvim-cluster
-mkdir -p ~/.config/nvim-cluster
-
-# Copy the cluster config
-scp -r ~/.config/nvim/init.cluster.lua cluster:~/.config/nvim-cluster/init.lua
-
-# Or clone just this branch
-git clone -b cluster-simple-config --single-branch \
-  <your-repo-url> ~/.config/nvim-cluster
-
-# In your cluster .bashrc or .bash_profile:
-export NVIM_APPNAME=nvim-cluster
-alias nvim="NVIM_APPNAME=nvim-cluster nvim"
-```
-
-### Option 2: Replace Main Config
-
-If you only want the cluster config:
+This is the tested method for clusters with **Git 1.8+**:
 
 ```bash
-# Backup your current config
-cd ~/.config/nvim
-git checkout master  # or your main branch
+# 1. Clone your config repo to ~/.config on the cluster
+cd ~
+git clone https://github.com/jpachebat/.config.git .config
 
-# Switch to cluster config
+# 2. Navigate to the nvim directory
+cd ~/.config
+
+# 3. Checkout the cluster-simple-config branch
 git checkout cluster-simple-config
 
-# Symlink the cluster config
-ln -sf ~/.config/nvim/init.cluster.lua ~/.config/nvim/init.lua
+# 4. Set up branch tracking (for future updates)
+git branch --set-upstream-to=origin/cluster-simple-config cluster-simple-config
+
+# 5. Create the symlink to use cluster config
+cd nvim
+ln -s init.cluster.lua init.lua
+
+# 6. Launch Neovim - it will auto-install everything
+nvim
 ```
 
-### Option 3: Direct Copy
+That's it! The first launch will:
+- Auto-install lazy.nvim (compatible with Git 1.8+)
+- Clone all plugins (~20 plugins)
+- Install Treesitter parsers
+- Set up LSP servers
 
-Simply copy the cluster config:
+### Critical: Git 1.8 Compatibility
+
+This config is specifically designed for **Git 1.8+** (common on older clusters).
+
+**Key difference from standard configs:**
+- `git.filter = false` in lazy.nvim setup (disables `--filter=blob:none` which Git 1.8 doesn't support)
+- Bootstrap uses basic `git clone` without modern flags
+
+If you see "error: unknown option `filter=blob:none`", the fix is already included in `init.cluster.lua`.
+
+### Updating Your Cluster Config
+
+To get the latest updates:
 
 ```bash
-# On cluster
-cp ~/.config/nvim/init.cluster.lua ~/.config/nvim/init.lua
+cd ~/.config
+git pull  # Pulls latest changes from cluster-simple-config branch
+nvim      # Launch to update plugins if needed
 ```
 
 ## First Time Setup
@@ -152,6 +158,19 @@ This config is optimized for performance:
 - `Ctrl+h/j/k/l` - Navigate between windows
 
 ## Troubleshooting
+
+### Issue: "error: unknown option `filter=blob:none`"
+**Cause**: Your cluster has Git 1.8.x which doesn't support blob filtering.
+**Solution**: This is already fixed in `init.cluster.lua` lines 356-359. If you still see this, ensure you're using the latest cluster-simple-config branch.
+
+### Issue: Connection interrupted during plugin installation
+**Impact**: Some plugins may not finish installing.
+**Solution**: lazy.nvim is resilient! Just restart nvim:
+```bash
+nvim  # It will resume where it left off
+# Or manually sync:
+# :Lazy sync
+```
 
 ### Issue: Plugins won't install
 **Solution**: Check if you have git and network access. If not, you may need to manually copy plugins from another machine.
