@@ -73,7 +73,8 @@ return {
             Delimiter = { fg = palette.springViolet1 },     -- Brackets/parens - violet
             ["@variable"] = { fg = palette.fujiWhite },     -- Treesitter variables
             ["@punctuation.bracket"] = { fg = palette.springViolet1 },
-            ["@punctuation.delimiter"] = { fg = palette.sumiInk4 },
+            ["@punctuation.delimiter"] = { fg = palette.springViolet1 }, -- Visible commas/dots
+            ["@punctuation.special"] = { fg = palette.springViolet2 },
 
             -- Ensure text is always visible
             Normal = { fg = palette.fujiWhite, bg = theme.ui.bg },
@@ -89,6 +90,34 @@ return {
             -- Make sure special chars are visible
             SpecialChar = { fg = palette.sakuraPink },
             Special = { fg = palette.springViolet2 },
+            Operator = { fg = palette.boatYellow2 },
+
+            -- Render-markdown checkboxes pop with clear colors
+            RenderMarkdownUnchecked = { fg = palette.samuraiRed, bold = true },
+            RenderMarkdownChecked = { fg = palette.autumnGreen, bold = true },
+            RenderMarkdownTodo = { fg = palette.roninYellow, bold = true },
+
+            -- Python readability in dark mode
+            pythonBuiltin = { fg = palette.springBlue, italic = true },
+            pythonFunction = { fg = palette.crystalBlue },
+            pythonDecorator = { fg = palette.peachRed },
+            pythonDecoratorName = { fg = palette.peachRed },
+            pythonOperator = { fg = palette.boatYellow2 },
+            pythonRepeat = { fg = palette.oniViolet, bold = true },
+            pythonConditional = { fg = palette.oniViolet, bold = true },
+            pythonInclude = { fg = palette.autumnRed },
+            pythonStatement = { fg = palette.oniViolet, bold = true },
+            pythonNumber = { fg = palette.surimiOrange },
+
+            ["@keyword.python"] = { fg = palette.oniViolet, bold = true },
+            ["@keyword.function.python"] = { fg = palette.crystalBlue },
+            ["@function.python"] = { fg = palette.crystalBlue },
+            ["@function.call.python"] = { fg = palette.crystalBlue },
+            ["@function.builtin.python"] = { fg = palette.springBlue, italic = true },
+            ["@variable.builtin.python"] = { fg = palette.springBlue, italic = true },
+            ["@exception.python"] = { fg = palette.autumnRed, bold = true },
+            ["@constant.builtin.python"] = { fg = palette.surimiOrange },
+            ["@number.python"] = { fg = palette.surimiOrange },
           }
         end
 
@@ -180,6 +209,11 @@ return {
           -- Code blocks and markdown code
           RenderMarkdownCode = { bg = "#EDE8DC" },                      -- Code block background - slightly darker cream
           RenderMarkdownCodeInline = { fg = "#A53500", bg = "#EDE8DC" },-- Inline code - orange on darker cream
+
+          -- Render-markdown checkbox icons - higher contrast than default
+          RenderMarkdownUnchecked = { fg = "#B82020", bold = true },    -- Bright red unchecked boxes
+          RenderMarkdownChecked = { fg = "#2D7B3E", bold = true },      -- Deep green checked boxes
+          RenderMarkdownTodo = { fg = "#C48200", bold = true },         -- Amber partial boxes
 
           -- Better contrast for various elements
           Constant = { fg = "#A53500" },                                -- Constants - orange-red

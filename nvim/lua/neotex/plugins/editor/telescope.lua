@@ -5,6 +5,7 @@ return {
     "nvim-lua/plenary.nvim",
     "nvim-telescope/telescope-bibtex.nvim",
     "debugloop/telescope-undo.nvim",
+    "nvim-telescope/telescope-file-browser.nvim",
     {
       "nvim-telescope/telescope-fzf-native.nvim",
       build = "make",
@@ -16,6 +17,7 @@ return {
   config = function()
     local telescope = require("telescope")
     local actions = require("telescope.actions")
+    local fb_actions = require("telescope").extensions.file_browser.actions
 
     telescope.setup({
       defaults = {
@@ -124,6 +126,30 @@ return {
           wrap = false,
           -- Wrapping in the preview window is disabled by default
         },
+        file_browser = {
+          theme = "dropdown",
+          hijack_netrw = true,
+          respect_gitignore = false,
+          grouped = true,
+          hidden = true,
+          previewer = false,
+          mappings = {
+            ["i"] = {
+              ["<C-n>"] = fb_actions.create,
+              ["<C-r>"] = fb_actions.rename,
+              ["<C-d>"] = fb_actions.remove,
+              ["<C-m>"] = fb_actions.move,
+              ["<C-y>"] = fb_actions.copy,
+            },
+            ["n"] = {
+              ["n"] = fb_actions.create,
+              ["r"] = fb_actions.rename,
+              ["d"] = fb_actions.remove,
+              ["m"] = fb_actions.move,
+              ["y"] = fb_actions.copy,
+            },
+          },
+        },
       },
     })
     
@@ -132,6 +158,7 @@ return {
     telescope.load_extension("yank_history")
     telescope.load_extension("bibtex")
     telescope.load_extension("ui-select")
+    telescope.load_extension("file_browser")
     
     -- Override vim.ui.select for confirmations to use smaller cursor theme
     local original_select = vim.ui.select

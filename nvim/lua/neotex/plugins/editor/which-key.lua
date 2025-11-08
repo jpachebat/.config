@@ -23,6 +23,7 @@ TOP-LEVEL MAPPINGS (<leader>)                   | DESCRIPTION
 <leader>E - Open oil.nvim explorer              | Edit filesystem like text buffer
 <leader>k - Kill/close split                    | Close current split window
 <leader>o - Show document outline               | Show file outline/sections (any file type)
+<leader>O - Obsidian notes                      | Markdown: Daily notes, search, templates
 <leader>q - Save all and quit                   | Save all files and exit Neovim
 <leader>u - Open Telescope undo                 | Show undo history with preview
 <leader>w - Write all files                     | Save all open files
@@ -226,6 +227,7 @@ return {
       { "<leader>D", function() vim.api.nvim_put({os.date("%a %Y-%m-%d %H:%M")}, "c", true, true) end, desc = "insert timestamp", icon = "󰃰" },
       { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "explorer (neo-tree)", icon = "󰙅" },
       { "<leader>E", "<cmd>Oil<CR>", desc = "explorer (oil)", icon = "󰏇" },
+      { "<leader>k", "<cmd>close<CR>", desc = "kill split", icon = "󰆴" },
       { "<leader>o", function()
         -- Try LSP document symbols first, fallback to treesitter
         local has_lsp = #vim.lsp.get_active_clients({ bufnr = 0 }) > 0
@@ -235,10 +237,10 @@ return {
           require('telescope.builtin').treesitter()
         end
       end, desc = "outline", icon = "󰊕" },
-      { "<leader>k", "<cmd>close<CR>", desc = "kill split", icon = "󰆴" },
       { "<leader>q", "<cmd>wa! | qa!<CR>", desc = "quit", icon = "󰗼" },
       { "<leader>u", "<cmd>Telescope undo<CR>", desc = "undo", icon = "󰕌" },
       { "<leader>w", "<cmd>wa!<CR>", desc = "write", icon = "󰆓" },
+      { "<leader>z", "<cmd>Snacks zen<CR>", desc = "zen mode", icon = "󰽙" },
     })
 
     -- Global AI toggles are now in keymaps.lua for centralized management
@@ -271,13 +273,16 @@ return {
       { "<leader>am", "<cmd>AvanteModel<CR>", desc = "avante model", icon = "󰡨" },
       { "<leader>ax", "<cmd>MCPHubOpen<CR>", desc = "mcp hub", icon = "󰚩" },
 
+      -- Codex CLI terminal
+      { "<leader>aX", function() require("neotex.plugins.ai.codex").toggle() end, desc = "toggle codex", icon = "󰭹", mode = { "n", "v" } },
+
       -- ChatGPT commands
       { "<leader>ag", "<cmd>ChatGPT<CR>", desc = "chatgpt", icon = "󰭹" },
       { "<leader>aG", "<cmd>ChatGPTActAs<CR>", desc = "chatgpt act as", icon = "󰭹" },
       { "<leader>ai", "<cmd>ChatGPTEditWithInstructions<CR>", desc = "edit with instructions", icon = "󱇧", mode = { "v" } },
 
       -- OpenAI CLI terminal (aichat)
-      { "<leader>ao", "<cmd>OpenAIToggle<CR>", desc = "openai terminal", icon = "󰭹" },
+      { "<leader>ao", function() require("neotex.plugins.ai.openai-cli").toggle() end, desc = "openai terminal", icon = "󰭹" },
 
       -- Lectic actions (only for .lec and .md files)
       { "<leader>al", "<cmd>Lectic<CR>", desc = "lectic run", icon = "󰊠", cond = is_lectic },
@@ -384,6 +389,13 @@ return {
       { "<leader>fa", "<cmd>lua require('telescope.builtin').find_files({ no_ignore = true, hidden = true, search_dirs = { '~/' } })<CR>", desc = "all files", icon = "󰈙" },
       { "<leader>fb", "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<CR>", desc = "buffers", icon = "󰓩" },
       { "<leader>fc", "<cmd>Telescope bibtex format_string=\\citet{%s}<CR>", desc = "citations", icon = "󰈙" },
+      { "<leader>fe", function()
+          require("telescope").extensions.file_browser.file_browser({
+            path = vim.fn.expand("%:p:h"),
+            select_buffer = true,
+          })
+        end,
+        desc = "file browser", icon = "󰙅" },
       { "<leader>ff", "<cmd>Telescope live_grep theme=ivy<CR>", desc = "project", icon = "󰊄" },
       { "<leader>fl", "<cmd>Telescope resume<CR>", desc = "last search", icon = "󰺄" },
       { "<leader>fp", "<cmd>lua require('neotex.util.misc').copy_buffer_path()<CR>", desc = "copy buffer path", icon = "󰆏" },
@@ -576,6 +588,38 @@ return {
       { "<leader>np", "<cmd>TermExec cmd='brave https://search.nixos.org/packages' open=0<CR>", desc = "packages", icon = "󰏖" },
       { "<leader>nr", "<cmd>TermExec cmd='~/.dotfiles/update.sh'<CR><C-w>l", desc = "rebuild nix", icon = "󰜉" },
       { "<leader>nu", "<cmd>TermExec cmd='nix flake update'<CR><C-w>j", desc = "update", icon = "󰚰" },
+    })
+
+    -- ============================================================================
+    -- <leader>O - OBSIDIAN GROUP
+    -- ============================================================================
+
+    -- Helper function to ensure obsidian is loaded
+    local function obsidian_cmd(cmd)
+      return function()
+        require("lazy").load({ plugins = { "obsidian.nvim" } })
+        vim.cmd(cmd)
+      end
+    end
+
+    wk.add({
+      -- Group header (markdown files only)
+      { "<leader>O", group = "obsidian", icon = "󰈙", cond = is_markdown },
+
+      -- Daily notes
+      { "<leader>Od", obsidian_cmd("ObsidianToday"), desc = "today", icon = "󰃰", cond = is_markdown },
+      { "<leader>Oy", obsidian_cmd("ObsidianPrevDay"), desc = "prev day (wknd)", icon = "󰮲", cond = is_markdown },
+      { "<leader>Ot", obsidian_cmd("ObsidianNextDay"), desc = "next day (wknd)", icon = "󰮰", cond = is_markdown },
+
+      -- Note management
+      { "<leader>On", obsidian_cmd("ObsidianNew"), desc = "new note", icon = "󰈙", cond = is_markdown },
+      { "<leader>Os", obsidian_cmd("ObsidianSearch"), desc = "search", icon = "󰍉", cond = is_markdown },
+      { "<leader>Oq", obsidian_cmd("ObsidianQuickSwitch"), desc = "quick switch", icon = "󰒕", cond = is_markdown },
+      { "<leader>Ob", obsidian_cmd("ObsidianBacklinks"), desc = "backlinks", icon = "󰌹", cond = is_markdown },
+      { "<leader>Ol", obsidian_cmd("ObsidianLinks"), desc = "links", icon = "󰌷", cond = is_markdown },
+
+      -- Templates
+      { "<leader>Op", obsidian_cmd("ObsidianTemplate"), desc = "template", icon = "󰈭", cond = is_markdown },
     })
 
     -- ============================================================================

@@ -28,6 +28,16 @@ return {
       auto_scroll = false,      -- automatically scroll to the bottom on terminal output
     }
 
+    local function safe_ai_setup(module)
+      local ok, ai_module = pcall(require, module)
+      if ok and ai_module and ai_module.setup then
+        ai_module.setup()
+      end
+    end
+
+    safe_ai_setup("neotex.plugins.ai.codex")
+    safe_ai_setup("neotex.plugins.ai.openai-cli")
+
     -- Add an autocommand to ensure terminals aren't saved in session
     vim.api.nvim_create_autocmd("VimLeavePre", {
       callback = function()

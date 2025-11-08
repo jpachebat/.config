@@ -462,6 +462,89 @@ The system recognizes cells based on these markers:
 
 This integration provides a seamless experience for data analysis, scientific computing, and literate programming without leaving Neovim.
 
+### Obsidian Notes Integration
+
+This configuration includes Obsidian.nvim for powerful note-taking and knowledge management within Neovim. It provides seamless integration with Obsidian vaults while maintaining the speed and efficiency of Neovim.
+
+#### Configuration
+
+- **Vault Location**: `~/work/notes` (configured workspace)
+- **Daily Notes**: Stored in `week/` subdirectory
+- **Templates**: Located in `Templates/` subdirectory
+- **Date Format**: `YYYY-MM-DD` (e.g., 2025-11-07.md)
+
+#### Keybindings (`<leader>O`)
+
+| Key            | Action                              |
+|----------------|-------------------------------------|
+| `<leader>Od`   | Open today's daily note             |
+| `<leader>Oy`   | Open previous day's daily note (weekends included) |
+| `<leader>Ot`   | Open next day's daily note (weekends included) |
+| `<leader>On`   | Create new note                     |
+| `<leader>Os`   | Search notes (Telescope)            |
+| `<leader>Oq`   | Quick switch between notes          |
+| `<leader>Ob`   | Show backlinks for current note     |
+| `<leader>Ol`   | Show all links in current note      |
+| `<leader>Op`   | Insert template                     |
+| `gf`           | Follow link under cursor            |
+| `<leader>ch`   | Toggle checkbox                     |
+
+#### Recommended Folder Structure for Research
+
+For academic researchers, a well-organized vault structure is essential. Here's a proven organization:
+
+```
+~/work/notes/
+├── week/                    # Daily notes (auto-configured)
+│   └── YYYY-MM-DD.md
+│
+├── Projects/                # Active research projects
+│   ├── Project-Name/
+│   │   ├── notes.md
+│   │   ├── hypotheses.md
+│   │   └── results.md
+│   └── ...
+│
+├── Literature/              # Paper notes & literature reviews
+│   ├── Author-Year.md       # One note per paper
+│   ├── Topic-Review.md      # Literature review by topic
+│   └── ...
+│
+├── Ideas/                   # Fleeting notes, thoughts, hypotheses
+│   └── ...
+│
+├── Methods/                 # Methodological notes, protocols
+│   └── ...
+│
+├── Meetings/                # Meeting notes with advisors, collaborators
+│   └── ...
+│
+├── Teaching/                # Course materials (if applicable)
+│   └── ...
+│
+├── Drafts/                  # Paper/thesis drafts or links to Overleaf
+│   └── ...
+│
+├── Archive/                 # Completed/inactive projects
+│   └── ...
+│
+└── Templates/               # Note templates
+    ├── paper-note.md
+    ├── project-template.md
+    └── meeting-note.md
+```
+
+#### Note-Taking Workflow
+
+1. **Daily Notes**: Press `<leader>Od` each day to create/open your daily note for journaling, task tracking, or meeting notes
+2. **Literature Management**: Create a note for each paper you read using `<leader>On`, organized in `Literature/`
+3. **Project Organization**: Keep project-specific notes in dedicated folders under `Projects/`
+4. **Quick Capture**: Use `<leader>On` to quickly capture ideas and organize them later
+5. **Link Everything**: Use `[[note-name]]` or markdown links to connect related notes
+6. **Template Use**: Press `<leader>Op` to insert pre-formatted templates for common note types
+
+This setup integrates seamlessly with existing Obsidian vaults, allowing you to use both the Obsidian app and Neovim interchangeably.
+
 ### NixOS Management
 
 This configuration includes convenient keybindings for managing NixOS systems directly from Neovim, streamlining system administration tasks:

@@ -40,6 +40,7 @@ function M.setup()
   local modules = {
     "neotex.config.options",
     "neotex.config.notifications",  -- Load notification system early
+    "neotex.config.treesitter_safety", -- Clamp faulty treesitter highlights
     "neotex.config.keymaps",
     "neotex.config.autocmds",
     "neotex.config.claude-init",  -- Claude-worktree integration

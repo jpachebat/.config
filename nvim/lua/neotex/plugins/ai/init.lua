@@ -48,7 +48,6 @@ local ai_plugins = {
   "claudecode",
   "lectic",
   "mcp-hub",
-  "openai-cli",
 }
 
 -- Load each AI plugin spec

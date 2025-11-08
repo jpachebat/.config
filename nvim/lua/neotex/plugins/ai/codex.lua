@@ -1,15 +1,15 @@
 local M = {}
 
-local openai_term
+local codex_term
 local commands_created = false
 
 local function notify_missing_toggleterm()
-  vim.notify("OpenAI CLI toggle requires toggleterm.nvim", vim.log.levels.WARN)
+  vim.notify("Codex toggle requires toggleterm.nvim", vim.log.levels.WARN)
 end
 
 local function ensure_terminal()
-  if openai_term then
-    return openai_term
+  if codex_term then
+    return codex_term
   end
 
   local ok, terminal = pcall(require, "toggleterm.terminal")
@@ -20,8 +20,8 @@ local function ensure_terminal()
 
   local Terminal = terminal.Terminal
 
-  openai_term = Terminal:new({
-    cmd = "aichat --role code",
+  codex_term = Terminal:new({
+    cmd = "codex",
     direction = "vertical",
     size = function(term)
       if term.direction == "horizontal" then
@@ -36,39 +36,32 @@ local function ensure_terminal()
       vim.bo[term.bufnr].buflisted = false
       vim.bo[term.bufnr].buftype = "terminal"
       vim.bo[term.bufnr].bufhidden = "hide"
+      vim.api.nvim_buf_set_name(term.bufnr, "term://codex")
       vim.cmd("startinsert!")
     end,
   })
 
-  _G.toggle_openai_terminal = function()
-    openai_term:toggle()
-  end
-
-  _G.open_openai_terminal = function()
-    openai_term:open()
-  end
-
-  _G.close_openai_terminal = function()
-    openai_term:close()
+  _G.codex_smart_toggle = function()
+    codex_term:toggle()
   end
 
   if not commands_created then
-    vim.api.nvim_create_user_command('OpenAIToggle', function()
+    vim.api.nvim_create_user_command('CodexToggle', function()
       M.toggle()
-    end, { desc = "Toggle OpenAI terminal" })
+    end, { desc = "Toggle Codex terminal" })
 
-    vim.api.nvim_create_user_command('OpenAIOpen', function()
+    vim.api.nvim_create_user_command('CodexOpen', function()
       M.open()
-    end, { desc = "Open OpenAI terminal" })
+    end, { desc = "Open Codex terminal" })
 
-    vim.api.nvim_create_user_command('OpenAIClose', function()
+    vim.api.nvim_create_user_command('CodexClose', function()
       M.close()
-    end, { desc = "Close OpenAI terminal" })
+    end, { desc = "Close Codex terminal" })
 
     commands_created = true
   end
 
-  return openai_term
+  return codex_term
 end
 
 function M.setup()

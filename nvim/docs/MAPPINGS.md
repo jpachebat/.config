@@ -112,6 +112,7 @@ All leader-based mappings use `<Space>` as the leader key and are organized into
 | `<leader>q` | Save all and quit | Save all files and exit Neovim |
 | `<leader>u` | Open Telescope undo | Show undo history with preview |
 | `<leader>w` | Write all files | Save all open files |
+| `<leader>z` | Toggle Zen mode | Snacks Zen writing mode with focused layout |
 
 ### AI/ASSISTANT (`<leader>a`)
 

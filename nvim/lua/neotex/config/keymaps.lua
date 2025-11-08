@@ -21,14 +21,16 @@ Organization:
 AI/ASSISTANT GLOBAL KEYBINDINGS                | DESCRIPTION
 ----------------------------------------------------------------------------------
 <C-c>                                          | Toggle Claude Code
+<C-x>                                          | Toggle Codex (OpenAI)
 <C-g>                                          | Toggle Avante interface (all modes)
 
 ----------------------------------------------------------------------------------
 TERMINAL MODE KEYBINDINGS                      | DESCRIPTION
 ----------------------------------------------------------------------------------
-<Esc>                                          | Exit terminal mode (non-Claude terminals)
-                                               | In Claude: Pass to CLI (stop execution)
-<C-c>                                          | In Claude: Toggle Claude window
+<Esc>                                          | Exit terminal mode (regular terminals)
+                                               | In Claude/Codex: Pass to CLI (stop execution)
+<C-c>                                          | In Claude terminal: Toggle Claude window
+<C-x>                                          | In Codex terminal: Toggle Codex window
 <C-t>                                          | Toggle terminal window
 <C-h>, <C-j>, <C-k>, <C-l>                     | Navigate between windows
 <M-h>, <M-l>, <M-Left>, <M-Right>              | Resize terminal window horizontally
@@ -81,6 +83,21 @@ d (visual mode)                                | Delete selection and recalculat
 <C-c>                                          | Toggle Claude Code (global binding, not autolist)
 
 ----------------------------------------------------------------------------------
+OBSIDIAN NOTES KEYBINDINGS                     | DESCRIPTION
+----------------------------------------------------------------------------------
+<leader>Od                                     | Open today's daily note
+<leader>Oy                                     | Open yesterday's daily note
+<leader>Ot                                     | Open tomorrow's daily note
+<leader>On                                     | Create new note
+<leader>Os                                     | Search notes (Telescope)
+<leader>Oq                                     | Quick switch between notes
+<leader>Ob                                     | Show backlinks for current note
+<leader>Ol                                     | Show all links in current note
+<leader>Op                                     | Insert template from Templates/ folder
+gf                                             | Follow link under cursor (in markdown files)
+<leader>ch                                     | Toggle checkbox (in markdown files)
+
+----------------------------------------------------------------------------------
 AVANTE AI BUFFER KEYBINDINGS                   | DESCRIPTION
 ----------------------------------------------------------------------------------
 <C-t>                                          | Toggle Avante interface
@@ -129,11 +146,13 @@ function M.setup()
     -- Lock terminal window to prevent buffer switching
     vim.wo.winfixbuf = true
 
-    -- Check if this is a Claude Code terminal
+    -- Check terminal type
     local bufname = vim.api.nvim_buf_get_name(0)
     local is_claude = bufname:match("claude") or bufname:match("ClaudeCode")
+    local is_codex = bufname:match("codex")
 
     if is_claude then
+      -- Claude Code terminal keybindings
       -- <C-c> in terminal mode toggles Claude window
       buf_map(0, "t", "<C-c>", "<C-\\><C-n><cmd>lua require('neotex.plugins.ai.claude').smart_toggle()<CR>", "Toggle Claude Code")
 
@@ -144,8 +163,22 @@ function M.setup()
       vim.keymap.set("n", "<C-c>", function()
         require("neotex.plugins.ai.claude").smart_toggle()
       end, { buffer = 0, noremap = true, silent = true, desc = "Toggle Claude Code" })
+
+    elseif is_codex then
+      -- Codex terminal keybindings (mirror Claude behavior)
+      -- <C-x> in terminal mode toggles Codex window
+      buf_map(0, "t", "<C-x>", "<C-\\><C-n><cmd>lua require('neotex.plugins.ai.codex').toggle()<CR>", "Toggle Codex")
+
+      -- <Esc> passes through to Codex CLI (for stopping execution)
+      buf_map(0, "t", "<esc>", "<esc>", "Send Esc to Codex CLI")
+
+      -- <C-x> in normal mode also toggles Codex window
+      vim.keymap.set("n", "<C-x>", function()
+        require("neotex.plugins.ai.codex").toggle()
+      end, { buffer = 0, noremap = true, silent = true, desc = "Toggle Codex" })
+
     else
-      -- For non-Claude terminals, map escape to exit terminal mode
+      -- For other terminals, map escape to exit terminal mode
       buf_map(0, "t", "<esc>", "<C-\\><C-n>", "Exit terminal mode")
     end
 
@@ -332,11 +365,43 @@ function M.setup()
     require("neotex.plugins.ai.claude").smart_toggle()
   end, {}, "Toggle Claude Code")
 
+  -- Codex toggle with single Ctrl-x
+  map({ "n", "v" }, "<C-x>", function()
+    require("neotex.plugins.ai.codex").toggle()
+  end, {}, "Toggle Codex")
+
   -- Avante toggle
   map("n", "<C-g>", "<cmd>AvanteToggle<CR>", {}, "Toggle Avante")
   map("i", "<C-g>", "<cmd>AvanteToggle<CR>", {}, "Toggle Avante")
   map("v", "<C-g>", "<cmd>AvanteToggle<CR>", {}, "Toggle Avante")
   map("t", "<C-g>", "<cmd>AvanteToggle<CR>", {}, "Toggle Avante")
+
+  ------------------------
+  -- OBSIDIAN NOTES    --
+  ------------------------
+
+  -- Helper function to ensure obsidian is loaded
+  local function obsidian_cmd(cmd)
+    return function()
+      require("lazy").load({ plugins = { "obsidian.nvim" }, wait = true })
+      vim.cmd(cmd)
+    end
+  end
+
+  -- Daily notes navigation
+  map("n", "<leader>Od", obsidian_cmd("ObsidianToday"), {}, "Open today's daily note")
+  map("n", "<leader>Oy", obsidian_cmd("ObsidianPrevDay"), {}, "Open previous daily note (weekends included)")
+  map("n", "<leader>Ot", obsidian_cmd("ObsidianNextDay"), {}, "Open next daily note (weekends included)")
+
+  -- Note management
+  map("n", "<leader>On", obsidian_cmd("ObsidianNew"), {}, "Create new note")
+  map("n", "<leader>Os", obsidian_cmd("ObsidianSearch"), {}, "Search notes")
+  map("n", "<leader>Oq", obsidian_cmd("ObsidianQuickSwitch"), {}, "Quick switch notes")
+  map("n", "<leader>Ob", obsidian_cmd("ObsidianBacklinks"), {}, "Show backlinks")
+  map("n", "<leader>Ol", obsidian_cmd("ObsidianLinks"), {}, "Show links in note")
+
+  -- Templates
+  map("n", "<leader>Op", obsidian_cmd("ObsidianTemplate"), {}, "Insert template")
 
   ------------------------
   -- TEXT EDITING KEYS --
