@@ -85,6 +85,7 @@ local luasnip_module = safe_require("neotex.plugins.tools.luasnip")
 local worktree_module = safe_require("neotex.plugins.tools.worktree")
 local wezterm_module = safe_require("neotex.plugins.tools.wezterm-integration")
 local osc52_module = safe_require("neotex.plugins.tools.osc52")
+local distant_module = safe_require("neotex.plugins.tools.distant")
 
 -- Create array of valid plugin specs
 local plugins = {}
@@ -119,6 +120,9 @@ add_if_valid(wezterm_module)
 
 -- OSC52 clipboard for SSH/remote environments
 add_if_valid(osc52_module)
+
+-- Distant.nvim for remote development
+add_if_valid(distant_module)
 
 -- Return only valid plugin specs
 return plugins
