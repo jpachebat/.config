@@ -3,10 +3,11 @@
 --
 -- This module configures todo-comments.nvim for enhanced TODO highlighting
 -- and navigation. It provides:
--- - Syntax highlighting for TODO, HACK, NOTE, FIX, WARNING etc.
--- - Integration with Telescope for searching TODOs
+-- - Syntax highlighting for TODO, DEADLINE, FIX, HACK, NOTE, WARNING etc.
+-- - Integration with Telescope for searching TODOs and DEADLINEs
 -- - Keymappings for navigating between TODOs
 -- - Custom colors for different comment types
+-- - DEADLINE keyword highlighted in bright red with calendar icon
 --
 -- The plugin uses treesitter for accurate comment detection across
 -- many languages and formats.
@@ -37,6 +38,7 @@ return {
           alt = { "FIXME", "BUG", "FIXIT", "ISSUE" }, -- Alternative keywords for the same group
         },
         TODO = { icon = "󰄬 ", color = "info" },       -- Stylized checkbox
+        DEADLINE = { icon = "󱫥 ", color = "deadline", alt = { "DUE", "DUEDATE" } }, -- Stylized calendar with alert
         HACK = { icon = "󰉀 ", color = "warning" },    -- Stylized lightning bolt
         WARN = { icon = "󰀪 ", color = "warning", alt = { "WARNING" } }, -- Stylized warning triangle
         PERF = { icon = "󰓅 ", color = "default", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } }, -- Stylized gauge/speedometer
@@ -52,6 +54,7 @@ return {
         hint = { "DiagnosticHint", "#10B981" },
         default = { "Identifier", "#7C3AED" },
         test = { "Identifier", "#FF00FF" },
+        deadline = { "DiagnosticError", "ErrorMsg", "#EF4444" }, -- Bright red for visibility
       },
 
       -- Patterns used to match comments
@@ -120,11 +123,14 @@ return {
     local has_which_key, which_key = pcall(require, "which-key")
     if has_which_key then
       which_key.add({
-        -- Add to FIND group (ft = find todos)
-        { "<leader>ft", "<cmd>TodoTelescope<CR>", desc = "todos", icon = "󰄬" },
-        
-        -- NOTE: TODO group is now under <leader>t (was <leader>T) to avoid conflict with TEMPLATES
-        -- The actual TODO mappings are defined in which-key.lua
+        -- Add to FIND group
+        { "<leader>ft", "<cmd>TodoTelescope<CR>", desc = "todos (all)", icon = "󰄬" },
+
+        -- NOTE: All TODO/DEADLINE mappings are now in which-key.lua
+        -- <leader>td - Search deadlines
+        -- <leader>tt - Search all todos
+        -- <leader>fd - Find deadlines (in find group)
+        -- <leader>ft - Find all todos (in find group)
       })
     end
   end,

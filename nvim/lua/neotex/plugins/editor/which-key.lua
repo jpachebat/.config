@@ -389,6 +389,7 @@ return {
       { "<leader>fa", "<cmd>lua require('telescope.builtin').find_files({ no_ignore = true, hidden = true, search_dirs = { '~/' } })<CR>", desc = "all files", icon = "󰈙" },
       { "<leader>fb", "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<CR>", desc = "buffers", icon = "󰓩" },
       { "<leader>fc", "<cmd>Telescope bibtex format_string=\\citet{%s}<CR>", desc = "citations", icon = "󰈙" },
+      { "<leader>fd", "<cmd>TodoTelescope keywords=DEADLINE<CR>", desc = "deadlines", icon = "󱫥" },
       { "<leader>fe", function()
           require("telescope").extensions.file_browser.file_browser({
             path = vim.fn.expand("%:p:h"),
@@ -700,11 +701,12 @@ return {
 
     wk.add({
       { "<leader>t", group = "todo", icon = "󰄬" },
+      { "<leader>td", "<cmd>TodoTelescope keywords=DEADLINE<CR>", desc = "deadlines", icon = "󱫥" },
       { "<leader>tl", "<cmd>TodoLocList<CR>", desc = "todo location list", icon = "󰈙" },
       { "<leader>tn", function() require("todo-comments").jump_next() end, desc = "next todo", icon = "󰮰" },
       { "<leader>tp", function() require("todo-comments").jump_prev() end, desc = "previous todo", icon = "󰮲" },
       { "<leader>tq", "<cmd>TodoQuickFix<CR>", desc = "todo quickfix", icon = "󰁨" },
-      { "<leader>tt", "<cmd>TodoTelescope<CR>", desc = "todo telescope", icon = "󰄬" },
+      { "<leader>tt", "<cmd>TodoTelescope<CR>", desc = "todo telescope (all)", icon = "󰄬" },
     })
 
     -- ============================================================================
