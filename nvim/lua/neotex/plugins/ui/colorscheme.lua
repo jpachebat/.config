@@ -67,7 +67,43 @@ return {
 
         if not is_light then
           -- Dark mode: fix hard-to-read elements
+          local deep_bg = "#050505"
+          local deep_bg_dim = "#080808"
+          local deep_bg_highlight = "#0e0e0e"
+          local deep_bg_float = "#0c0c0c"
+
           return {
+            -- Core surfaces darkened for near-black UI
+            Normal = { fg = palette.fujiWhite, bg = deep_bg },
+            NormalNC = { fg = palette.fujiWhite, bg = deep_bg_dim },
+            NormalSB = { fg = palette.fujiWhite, bg = deep_bg_dim },
+            NormalFloat = { fg = palette.fujiWhite, bg = deep_bg_float },
+            FloatBorder = { fg = palette.sumiInk4, bg = deep_bg_float },
+            SignColumn = { bg = deep_bg_dim },
+            LineNr = { fg = palette.fujiGray, bg = deep_bg_dim },  -- Visible gray for line numbers
+            CursorLine = { bg = deep_bg_highlight },
+            CursorLineNr = { fg = palette.roninYellow, bg = deep_bg_highlight, bold = true },
+            StatusLine = { fg = palette.springBlue, bg = deep_bg_highlight },
+            StatusLineNC = { fg = palette.fujiGray, bg = deep_bg_dim },
+            Visual = { bg = "#1a1a1a" },
+
+            -- Floating UIs keep the near-black tone
+            Pmenu = { fg = palette.fujiWhite, bg = deep_bg_float },
+            PmenuSel = { fg = palette.sakuraPink, bg = deep_bg_highlight, bold = true },
+            PmenuSbar = { bg = deep_bg_highlight },
+            PmenuThumb = { bg = palette.waveBlue1 },
+            WinSeparator = { fg = "#121212", bg = deep_bg_dim },
+
+            -- Telescope surfaces inherit the deep background to avoid washed-out panels
+            TelescopeNormal = { fg = palette.fujiWhite, bg = deep_bg_float },
+            TelescopeBorder = { fg = palette.sumiInk4, bg = deep_bg_float },
+            TelescopeResultsNormal = { fg = palette.fujiWhite, bg = deep_bg_dim },
+            TelescopeResultsBorder = { fg = palette.sumiInk4, bg = deep_bg_dim },
+            TelescopePreviewNormal = { fg = palette.fujiWhite, bg = deep_bg_dim },
+            TelescopePreviewBorder = { fg = palette.sumiInk4, bg = deep_bg_dim },
+            TelescopePromptNormal = { fg = palette.fujiWhite, bg = deep_bg_highlight },
+            TelescopePromptBorder = { fg = palette.sumiInk4, bg = deep_bg_highlight },
+
             -- Fix black/dark text that's hard to read on dark background
             Identifier = { fg = palette.fujiWhite },        -- Variables - bright white
             Delimiter = { fg = palette.springViolet1 },     -- Brackets/parens - violet
@@ -76,16 +112,8 @@ return {
             ["@punctuation.delimiter"] = { fg = palette.springViolet1 }, -- Visible commas/dots
             ["@punctuation.special"] = { fg = palette.springViolet2 },
 
-            -- Ensure text is always visible
-            Normal = { fg = palette.fujiWhite, bg = theme.ui.bg },
-            NormalNC = { fg = palette.fujiWhite, bg = theme.ui.bg_dim },
-
             -- Comments should be visible but muted
             Comment = { fg = palette.fujiGray, italic = true },
-
-            -- UI elements with better contrast
-            LineNr = { fg = palette.fujiGray },  -- Visible gray for line numbers
-            CursorLineNr = { fg = palette.roninYellow, bold = true },
 
             -- Make sure special chars are visible
             SpecialChar = { fg = palette.sakuraPink },

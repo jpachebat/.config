@@ -33,6 +33,7 @@ TERMINAL MODE KEYBINDINGS                      | DESCRIPTION
 <C-x>                                          | In Codex terminal: Toggle Codex window
 <C-t>                                          | Toggle terminal window
 <C-h>, <C-j>, <C-k>, <C-l>                     | Navigate between windows
+<M-1>, <M-2>, <M-3>, <M-4>, <M-5>              | Switch to terminals 1-5 (from within any terminal)
 <M-h>, <M-l>, <M-Left>, <M-Right>              | Resize terminal window horizontally
 
 ----------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ GENERAL KEYBINDINGS                            | DESCRIPTION
 <Space>                                        | Leader key for command sequences
 <C-z>                                          | Disabled (prevents accidental suspension)
 <C-t>                                          | Toggle terminal window
+<M-1>, <M-2>, <M-3>, <M-4>, <M-5>              | Quick access to terminals 1-5 (from any mode)
 <C-s>                                          | Show spelling suggestions with Telescope
 <CR> (Enter)                                   | Clear search highlighting
 <C-p>                                          | Find files with Telescope
@@ -109,6 +111,8 @@ AVANTE AI BUFFER KEYBINDINGS                   | DESCRIPTION
 <CR> (Enter)                                   | Create new line (prevents submission)
 --]]
 
+local obsidian_dailies = require("neotex.obsidian.dailies")
+
 local M = {}
 
 function M.setup()
@@ -140,6 +144,24 @@ function M.setup()
   ----------------------------------------
   -- BUFFER-SPECIFIC KEYMAP FUNCTIONS  --
   ----------------------------------------
+
+  -- Smart terminal switching - hides current, shows target
+  function _G.switch_terminal(num)
+    -- Get all terminal buffers
+    local terms = require("toggleterm.terminal")
+    local Terminal = terms.Terminal
+
+    -- Close all visible terminals first
+    local all_terms = terms.get_all(true)
+    for _, term in pairs(all_terms) do
+      if term:is_open() then
+        term:close()
+      end
+    end
+
+    -- Now toggle the target terminal (will open it)
+    vim.cmd(string.format("ToggleTerm %d", num))
+  end
 
   -- Terminal-specific keybindings (called by terminal filetype autocmd)
   function _G.set_terminal_keymaps()
@@ -186,6 +208,14 @@ function M.setup()
     buf_map(0, "t", "<C-j>", "<Cmd>wincmd j<CR>", "Navigate down")
     buf_map(0, "t", "<C-k>", "<Cmd>wincmd k<CR>", "Navigate up")
     buf_map(0, "t", "<C-l>", "<Cmd>wincmd l<CR>", "Navigate right")
+
+    -- Terminal switching (Alt+number to switch between terminals 1-5)
+    -- Exit terminal mode first, then switch using smart switching function
+    buf_map(0, "t", "<M-1>", "<C-\\><C-n><Cmd>lua switch_terminal(1)<CR>", "Switch to terminal 1")
+    buf_map(0, "t", "<M-2>", "<C-\\><C-n><Cmd>lua switch_terminal(2)<CR>", "Switch to terminal 2")
+    buf_map(0, "t", "<M-3>", "<C-\\><C-n><Cmd>lua switch_terminal(3)<CR>", "Switch to terminal 3")
+    buf_map(0, "t", "<M-4>", "<C-\\><C-n><Cmd>lua switch_terminal(4)<CR>", "Switch to terminal 4")
+    buf_map(0, "t", "<M-5>", "<C-\\><C-n><Cmd>lua switch_terminal(5)<CR>", "Switch to terminal 5")
 
     -- Terminal resizing
     buf_map(0, "t", "<M-Right>", "<Cmd>vertical resize -2<CR>", "Resize right")
@@ -302,6 +332,13 @@ function M.setup()
   map("n", "<C-t>", "<cmd>ToggleTerm<CR>", { remap = true }, "Toggle terminal")
   map("t", "<C-t>", "<cmd>ToggleTerm<CR>", { remap = true }, "Toggle terminal")
 
+  -- Quick terminal switching (Alt+number from any mode)
+  map("n", "<M-1>", "<cmd>lua switch_terminal(1)<CR>", {}, "Terminal 1")
+  map("n", "<M-2>", "<cmd>lua switch_terminal(2)<CR>", {}, "Terminal 2")
+  map("n", "<M-3>", "<cmd>lua switch_terminal(3)<CR>", {}, "Terminal 3")
+  map("n", "<M-4>", "<cmd>lua switch_terminal(4)<CR>", {}, "Terminal 4")
+  map("n", "<M-5>", "<cmd>lua switch_terminal(5)<CR>", {}, "Terminal 5")
+
   -- Oil.nvim file explorer (edit filesystem like text)
   map("n", "-", "<cmd>Oil<CR>", {}, "Open parent directory (oil)")
 
@@ -388,10 +425,30 @@ function M.setup()
     end
   end
 
+  local function obsidian_daily_command(name, direction, desc)
+    pcall(vim.api.nvim_del_user_command, name)
+    vim.api.nvim_create_user_command(name, function(command_opts)
+      local count = command_opts.count ~= 0 and command_opts.count or 1
+      obsidian_dailies.open_daily(direction * count, { ensure_loaded = true })
+    end, {
+      desc = desc,
+      count = true,
+    })
+  end
+
+  obsidian_daily_command("ObsidianPrevDay", -1, "Open the previous daily note (weekends included)")
+  obsidian_daily_command("ObsidianNextDay", 1, "Open the next daily note (weekends included)")
+
   -- Daily notes navigation
   map("n", "<leader>Od", obsidian_cmd("ObsidianToday"), {}, "Open today's daily note")
-  map("n", "<leader>Oy", obsidian_cmd("ObsidianPrevDay"), {}, "Open previous daily note (weekends included)")
-  map("n", "<leader>Ot", obsidian_cmd("ObsidianNextDay"), {}, "Open next daily note (weekends included)")
+  map("n", "<leader>Oy", function()
+    local count = vim.v.count1
+    obsidian_dailies.open_daily(-count, { ensure_loaded = true })
+  end, {}, "Open previous daily note (weekends included)")
+  map("n", "<leader>Ot", function()
+    local count = vim.v.count1
+    obsidian_dailies.open_daily(count, { ensure_loaded = true })
+  end, {}, "Open next daily note (weekends included)")
 
   -- Note management
   map("n", "<leader>On", obsidian_cmd("ObsidianNew"), {}, "Create new note")

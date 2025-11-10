@@ -17,6 +17,7 @@ The configuration provides:
 TOP-LEVEL MAPPINGS (<leader>)                   | DESCRIPTION
 ----------------------------------------------------------------------------------
 <leader>c - Create vertical split               | Split window vertically
+<leader>C - Create horizontal split             | Split window horizontally
 <leader>d - Save and delete buffer              | Save file and close buffer
 <leader>D - Insert timestamp                    | Insert current date/time (Mon YYYY-MM-DD HH:MM)
 <leader>e - Toggle Neo-tree explorer            | Open/close visual file tree (sidebar)
@@ -26,6 +27,7 @@ TOP-LEVEL MAPPINGS (<leader>)                   | DESCRIPTION
 <leader>O - Obsidian notes                      | Markdown: Daily notes, search, templates
 <leader>q - Save all and quit                   | Save all files and exit Neovim
 <leader>u - Open Telescope undo                 | Show undo history with preview
+<leader>v - Terminal management                 | Access terminals 1-5, horizontal/vertical splits
 <leader>w - Write all files                     | Save all open files
 
 [Additional documentation continues as before...]
@@ -222,7 +224,8 @@ return {
     -- ============================================================================
 
     wk.add({
-      { "<leader>c", "<cmd>vert sb<CR>", desc = "create split", icon = "󰯌" },
+      { "<leader>c", "<cmd>vert sb<CR>", desc = "create vertical split", icon = "󰯌" },
+      { "<leader>C", "<cmd>split<CR>", desc = "create horizontal split", icon = "󰤼" },
       { "<leader>d", "<cmd>update! | lua Snacks.bufdelete()<CR>", desc = "delete buffer", icon = "󰩺" },
       { "<leader>D", function() vim.api.nvim_put({os.date("%a %Y-%m-%d %H:%M")}, "c", true, true) end, desc = "insert timestamp", icon = "󰃰" },
       { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "explorer (neo-tree)", icon = "󰙅" },
@@ -239,6 +242,14 @@ return {
       end, desc = "outline", icon = "󰊕" },
       { "<leader>q", "<cmd>wa! | qa!<CR>", desc = "quit", icon = "󰗼" },
       { "<leader>u", "<cmd>Telescope undo<CR>", desc = "undo", icon = "󰕌" },
+      { "<leader>v", group = "terminals", icon = "󰆍" },
+      { "<leader>v1", "<cmd>lua switch_terminal(1)<CR>", desc = "terminal 1", icon = "󰆍" },
+      { "<leader>v2", "<cmd>lua switch_terminal(2)<CR>", desc = "terminal 2", icon = "󰆍" },
+      { "<leader>v3", "<cmd>lua switch_terminal(3)<CR>", desc = "terminal 3", icon = "󰆍" },
+      { "<leader>v4", "<cmd>lua switch_terminal(4)<CR>", desc = "terminal 4", icon = "󰆍" },
+      { "<leader>v5", "<cmd>lua switch_terminal(5)<CR>", desc = "terminal 5", icon = "󰆍" },
+      { "<leader>vh", function() require("toggleterm.terminal").Terminal:new({ direction = "horizontal" }):toggle() end, desc = "horizontal split", icon = "󰤼" },
+      { "<leader>vv", function() require("toggleterm.terminal").Terminal:new({ direction = "vertical" }):toggle() end, desc = "vertical split", icon = "󰯌" },
       { "<leader>w", "<cmd>wa!<CR>", desc = "write", icon = "󰆓" },
       { "<leader>z", "<cmd>Snacks zen<CR>", desc = "zen mode", icon = "󰽙" },
     })
@@ -389,7 +400,7 @@ return {
       { "<leader>fa", "<cmd>lua require('telescope.builtin').find_files({ no_ignore = true, hidden = true, search_dirs = { '~/' } })<CR>", desc = "all files", icon = "󰈙" },
       { "<leader>fb", "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<CR>", desc = "buffers", icon = "󰓩" },
       { "<leader>fc", "<cmd>Telescope bibtex format_string=\\citet{%s}<CR>", desc = "citations", icon = "󰈙" },
-      { "<leader>fd", "<cmd>TodoTelescope keywords=DEADLINE<CR>", desc = "deadlines", icon = "󱫥" },
+      { "<leader>fd", "<cmd>DeadlineTelescope<CR>", desc = "deadlines (by date)", icon = "󱫥" },
       { "<leader>fe", function()
           require("telescope").extensions.file_browser.file_browser({
             path = vim.fn.expand("%:p:h"),
@@ -399,6 +410,7 @@ return {
         desc = "file browser", icon = "󰙅" },
       { "<leader>ff", "<cmd>Telescope live_grep theme=ivy<CR>", desc = "project", icon = "󰊄" },
       { "<leader>fl", "<cmd>Telescope resume<CR>", desc = "last search", icon = "󰺄" },
+      { "<leader>fo", function() require('neotex.telescope.logs').show_output_logs() end, desc = "output logs", icon = "󰌱" },
       { "<leader>fp", "<cmd>lua require('neotex.util.misc').copy_buffer_path()<CR>", desc = "copy buffer path", icon = "󰆏" },
       { "<leader>fq", "<cmd>Telescope quickfix<CR>", desc = "quickfix", icon = "󰁨" },
       { "<leader>fg", "<cmd>Telescope git_commits<CR>", desc = "git history", icon = "󰊢" },
@@ -701,7 +713,7 @@ return {
 
     wk.add({
       { "<leader>t", group = "todo", icon = "󰄬" },
-      { "<leader>td", "<cmd>TodoTelescope keywords=DEADLINE<CR>", desc = "deadlines", icon = "󱫥" },
+      { "<leader>td", "<cmd>DeadlineTelescope<CR>", desc = "deadlines (by date)", icon = "󱫥" },
       { "<leader>tl", "<cmd>TodoLocList<CR>", desc = "todo location list", icon = "󰈙" },
       { "<leader>tn", function() require("todo-comments").jump_next() end, desc = "next todo", icon = "󰮰" },
       { "<leader>tp", function() require("todo-comments").jump_prev() end, desc = "previous todo", icon = "󰮲" },
