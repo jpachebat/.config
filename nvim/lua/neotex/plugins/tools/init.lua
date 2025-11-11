@@ -12,7 +12,6 @@
 -- - surround.lua: Text surrounding functionality
 -- - todo-comments.lua: Highlight and search TODO comments
 -- - yanky.lua: Enhanced yank and paste functionality
--- - himalaya/: Email client integration with local storage
 --
 -- Note: The following remain in other modules:
 -- - toggleterm.lua: Terminal integration (editor module)
@@ -52,8 +51,7 @@ local function safe_require(module)
       return {}
     end
     
-    -- Special case: himalaya-plugin should return its own spec, not expose the full module
-    if module == "neotex.plugins.tools.himalaya-plugin" then
+    if false then  -- Removed himalaya support
       -- This should be a direct plugin spec table with dir, name, etc.
       if result.dir and result.name then
         return result
@@ -81,7 +79,6 @@ local surround_module = safe_require("neotex.plugins.tools.surround")
 local todo_comments_module = safe_require("neotex.plugins.tools.todo-comments")
 local yanky_module = safe_require("neotex.plugins.tools.yanky")
 local luasnip_module = safe_require("neotex.plugins.tools.luasnip")
--- local himalaya_module = safe_require("neotex.plugins.tools.himalaya-plugin")  -- Disabled
 local worktree_module = safe_require("neotex.plugins.tools.worktree")
 local wezterm_module = safe_require("neotex.plugins.tools.wezterm-integration")
 local osc52_module = safe_require("neotex.plugins.tools.osc52")
@@ -108,9 +105,6 @@ add_if_valid(surround_module)
 add_if_valid(todo_comments_module)
 add_if_valid(yanky_module)
 add_if_valid(luasnip_module)
-
--- Himalaya returns a single spec, add it directly
--- add_if_valid(himalaya_module)  -- Disabled
 
 -- Git worktree management
 add_if_valid(worktree_module)
