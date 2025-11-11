@@ -239,7 +239,30 @@ return {
       if not ts then
         return "—", "Comment"
       end
-      local diff_days = math.floor((ts - now) / 86400)
+      -- Normalize both dates to midnight for accurate day comparison
+      local task_date = os.date("*t", ts)
+      local today_date = os.date("*t", now)
+
+      local task_midnight = os.time({
+        year = task_date.year,
+        month = task_date.month,
+        day = task_date.day,
+        hour = 0,
+        min = 0,
+        sec = 0
+      })
+
+      local today_midnight = os.time({
+        year = today_date.year,
+        month = today_date.month,
+        day = today_date.day,
+        hour = 0,
+        min = 0,
+        sec = 0
+      })
+
+      local diff_days = math.floor((task_midnight - today_midnight) / 86400)
+
       if diff_days < 0 then
         return string.format("%dd", diff_days), "DiagnosticError"
       elseif diff_days == 0 then
