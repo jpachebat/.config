@@ -90,12 +90,16 @@ OBSIDIAN NOTES KEYBINDINGS                     | DESCRIPTION
 <leader>Od                                     | Open today's daily note
 <leader>Oy                                     | Open yesterday's daily note
 <leader>Ot                                     | Open tomorrow's daily note
-<leader>On                                     | Create new note
+<leader>Ow                                     | Open this week's note (creates all dailies)
+<leader>On                                     | Open next week's note (creates all dailies)
+<leader>Op                                     | Open previous week's note
+<leader>ON                                     | Create new note
 <leader>Os                                     | Search notes (Telescope)
 <leader>Oq                                     | Quick switch between notes
 <leader>Ob                                     | Show backlinks for current note
 <leader>Ol                                     | Show all links in current note
-<leader>Op                                     | Insert template from Templates/ folder
+<leader>Oo                                     | Open current note in Obsidian app
+<leader>OT                                     | Insert template from Templates/ folder
 gf                                             | Follow link under cursor (in markdown files)
 <leader>ch                                     | Toggle checkbox (in markdown files)
 

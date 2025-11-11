@@ -62,8 +62,9 @@ return {
         local theme = colors.theme
         local palette = colors.palette
 
-        -- Only apply light mode overrides when in light mode
-        local is_light = vim.o.background == "light"
+        -- Detect if this is lotus (light) theme by checking palette colors
+        -- Kanagawa lotus has a bright background, wave/dragon are dark
+        local is_light = colors.theme.ui.bg == "#f2ecbc" or colors.theme.ui.bg:match("^#[def]")
 
         if not is_light then
           -- Dark mode: fix hard-to-read elements
@@ -149,14 +150,18 @@ return {
           }
         end
 
-        -- High contrast colors for light mode only
+        -- Professional light mode colors - neutral blues and grays
         return {
-          -- LaTeX Commands - dark, saturated colors for visibility
-          texStatement = { fg = "#7E3992", bold = true },               -- \begin, \end - dark purple
-          texCmd = { fg = "#0F4C81" },                                  -- general commands - deep blue
-          texCmdEnv = { fg = "#7E3992", bold = true },                  -- environment commands - dark purple
-          texEnvArgName = { fg = "#2D7B3E", italic = true },            -- environment names - forest green
-          texMathEnvArgName = { fg = "#8F5902", italic = true },        -- math environment names - brown
+          -- Cursor line - subtle gray highlight (not green!)
+          CursorLine = { bg = "#F9FAFB" },                              -- Very light gray - subtle
+          CursorLineNr = { fg = "#1F2937", bg = "#F9FAFB", bold = true }, -- Dark gray number
+
+          -- LaTeX Commands - professional blues and burgundy
+          texStatement = { fg = "#7C3AED", bold = true },               -- \begin, \end - purple
+          texCmd = { fg = "#1E40AF" },                                  -- general commands - navy blue
+          texCmdEnv = { fg = "#7C3AED", bold = true },                  -- environment commands - purple
+          texEnvArgName = { fg = "#0F3460", italic = true },            -- environment names - dark blue
+          texMathEnvArgName = { fg = "#92400E", italic = true },        -- math environment names - brown
 
           -- LaTeX Sections and Structure
           texSection = { fg = "#C13030", bold = true },                 -- \section - bright red
@@ -180,90 +185,90 @@ return {
           texTypeSize = { fg = "#1A7C8A" },                             -- \large, \small - teal
 
           -- LaTeX References and Citations
-          texRefZone = { fg = "#2D7B3E", underline = true },            -- \ref, \cite - forest green
-          texCite = { fg = "#2D7B3E" },                                 -- citations - forest green
+          texRefZone = { fg = "#1E40AF", underline = true },            -- \ref, \cite - navy blue
+          texCite = { fg = "#1E40AF" },                                 -- citations - navy blue
 
           -- LaTeX Comments
-          texComment = { fg = "#757575", italic = true },               -- % comments - gray
+          texComment = { fg = "#71717A", italic = true },               -- % comments - neutral gray
 
           -- LaTeX Special
-          texInputFile = { fg = "#C84D99", underline = true },          -- \input, \include - magenta
-          texDocType = { fg = "#8F5902", bold = true },                 -- \documentclass - brown
-          texDocTypeArgs = { fg = "#8F5902" },                          -- document class args - brown
+          texInputFile = { fg = "#BE185D", underline = true },          -- \input, \include - pink
+          texDocType = { fg = "#92400E", bold = true },                 -- \documentclass - brown
+          texDocTypeArgs = { fg = "#92400E" },                          -- document class args - brown
 
-          -- General syntax improvements for light mode
-          Normal = { fg = "#2E2E2E", bg = "#F5F0E8" },                  -- Main text - warm creamy background
-          Comment = { fg = "#6B6B6B", italic = true },                  -- Comments - darker gray for visibility
-          Keyword = { fg = "#7E2F92", bold = true },                    -- Keywords - deeper purple
-          String = { fg = "#1F6B2E" },                                  -- Strings - darker green for readability
-          Function = { fg = "#0A3D6B" },                                -- Functions - deeper blue
-          Type = { fg = "#8F4700" },                                    -- Types - darker orange
+          -- General syntax improvements for light mode - professional palette
+          Normal = { fg = "#1F2937", bg = "#FFFFFF" },                  -- Dark gray on pure white
+          Comment = { fg = "#6B7280", italic = true },                  -- Medium gray
+          Keyword = { fg = "#7C3AED", bold = true },                    -- Purple
+          String = { fg = "#0F3460" },                                  -- Dark blue - professional, not green
+          Function = { fg = "#1E40AF" },                                -- Navy blue
+          Type = { fg = "#D97706" },                                    -- Amber
 
-          -- Python-specific syntax highlighting
-          pythonBuiltin = { fg = "#5F2A9C", italic = true },            -- Built-in functions - purple
-          pythonFunction = { fg = "#0A3D6B", bold = true },             -- Function definitions - blue
-          pythonDecorator = { fg = "#A53500" },                         -- Decorators - orange-red
-          pythonDecoratorName = { fg = "#A53500" },                     -- Decorator names - orange-red
-          pythonException = { fg = "#B82020", bold = true },            -- Exceptions - red
-          pythonOperator = { fg = "#7E2F92" },                          -- Operators - purple
-          pythonRepeat = { fg = "#7E2F92", bold = true },               -- for, while - purple
-          pythonConditional = { fg = "#7E2F92", bold = true },          -- if, else - purple
-          pythonInclude = { fg = "#B82020" },                           -- import, from - red
-          pythonStatement = { fg = "#7E2F92", bold = true },            -- return, pass, etc. - purple
-          pythonAsync = { fg = "#A53500", italic = true },              -- async/await - orange
-          pythonClass = { fg = "#8F4700", bold = true },                -- Class keyword - orange
-          pythonDefine = { fg = "#0A3D6B", bold = true },               -- def keyword - blue
-          pythonDottedName = { fg = "#2E2E2E" },                        -- Module names - dark
-          pythonBuiltinObj = { fg = "#5F2A9C", italic = true },         -- Built-in objects - purple
-          pythonBuiltinFunc = { fg = "#5F2A9C", italic = true },        -- Built-in functions - purple
-          pythonStrFormat = { fg = "#1F6B2E", bold = true },            -- String formatting - green
-          pythonNumber = { fg = "#A53500" },                            -- Numbers - orange-red
+          -- Python-specific syntax highlighting - professional colors
+          pythonBuiltin = { fg = "#7C3AED", italic = true },            -- Built-in functions - purple
+          pythonFunction = { fg = "#1E40AF", bold = true },             -- Function definitions - navy
+          pythonDecorator = { fg = "#D97706" },                         -- Decorators - amber
+          pythonDecoratorName = { fg = "#D97706" },                     -- Decorator names - amber
+          pythonException = { fg = "#DC2626", bold = true },            -- Exceptions - red
+          pythonOperator = { fg = "#7C3AED" },                          -- Operators - purple
+          pythonRepeat = { fg = "#7C3AED", bold = true },               -- for, while - purple
+          pythonConditional = { fg = "#7C3AED", bold = true },          -- if, else - purple
+          pythonInclude = { fg = "#DC2626" },                           -- import, from - red
+          pythonStatement = { fg = "#7C3AED", bold = true },            -- return, pass, etc. - purple
+          pythonAsync = { fg = "#D97706", italic = true },              -- async/await - amber
+          pythonClass = { fg = "#D97706", bold = true },                -- Class keyword - amber
+          pythonDefine = { fg = "#1E40AF", bold = true },               -- def keyword - navy
+          pythonDottedName = { fg = "#1F2937" },                        -- Module names - dark gray
+          pythonBuiltinObj = { fg = "#7C3AED", italic = true },         -- Built-in objects - purple
+          pythonBuiltinFunc = { fg = "#7C3AED", italic = true },        -- Built-in functions - purple
+          pythonStrFormat = { fg = "#0F3460", bold = true },            -- String formatting - dark blue
+          pythonNumber = { fg = "#D97706" },                            -- Numbers - amber
 
-          -- Treesitter Python groups (for better compatibility)
-          ["@keyword.python"] = { fg = "#7E2F92", bold = true },
-          ["@keyword.function.python"] = { fg = "#0A3D6B", bold = true },
-          ["@keyword.return.python"] = { fg = "#7E2F92", bold = true },
-          ["@keyword.operator.python"] = { fg = "#7E2F92" },
-          ["@function.builtin.python"] = { fg = "#5F2A9C", italic = true },
-          ["@function.call.python"] = { fg = "#0A3D6B" },
-          ["@variable.builtin.python"] = { fg = "#5F2A9C", italic = true },
-          ["@exception.python"] = { fg = "#B82020", bold = true },
-          ["@decorator.python"] = { fg = "#A53500" },
-          ["@type.python"] = { fg = "#8F4700" },
-          ["@type.builtin.python"] = { fg = "#8F4700", italic = true },
-          ["@constant.builtin.python"] = { fg = "#A53500", bold = true },
-          ["@string.documentation.python"] = { fg = "#1F6B2E", italic = true },
+          -- Treesitter Python groups - professional colors
+          ["@keyword.python"] = { fg = "#7C3AED", bold = true },
+          ["@keyword.function.python"] = { fg = "#1E40AF", bold = true },
+          ["@keyword.return.python"] = { fg = "#7C3AED", bold = true },
+          ["@keyword.operator.python"] = { fg = "#7C3AED" },
+          ["@function.builtin.python"] = { fg = "#7C3AED", italic = true },
+          ["@function.call.python"] = { fg = "#1E40AF" },
+          ["@variable.builtin.python"] = { fg = "#7C3AED", italic = true },
+          ["@exception.python"] = { fg = "#DC2626", bold = true },
+          ["@decorator.python"] = { fg = "#D97706" },
+          ["@type.python"] = { fg = "#D97706" },
+          ["@type.builtin.python"] = { fg = "#D97706", italic = true },
+          ["@constant.builtin.python"] = { fg = "#D97706", bold = true },
+          ["@string.documentation.python"] = { fg = "#0F3460", italic = true },
 
-          -- Code blocks and markdown code
-          RenderMarkdownCode = { bg = "#EDE8DC" },                      -- Code block background - slightly darker cream
-          RenderMarkdownCodeInline = { fg = "#A53500", bg = "#EDE8DC" },-- Inline code - orange on darker cream
+          -- Code blocks and markdown code - professional clean
+          RenderMarkdownCode = { bg = "#F3F4F6" },                      -- Code block background - light gray
+          RenderMarkdownCodeInline = { fg = "#D97706", bg = "#F3F4F6" },-- Inline code - amber on gray
 
-          -- Render-markdown checkbox icons - higher contrast than default
-          RenderMarkdownUnchecked = { fg = "#B82020", bold = true },    -- Bright red unchecked boxes
-          RenderMarkdownChecked = { fg = "#2D7B3E", bold = true },      -- Deep green checked boxes
-          RenderMarkdownTodo = { fg = "#C48200", bold = true },         -- Amber partial boxes
+          -- Render-markdown checkbox icons - professional colors
+          RenderMarkdownUnchecked = { fg = "#DC2626", bold = true },    -- Red unchecked
+          RenderMarkdownChecked = { fg = "#059669", bold = true },      -- Teal checked (only green usage - for positive indicator)
+          RenderMarkdownTodo = { fg = "#D97706", bold = true },         -- Amber partial
 
-          -- Better contrast for various elements
-          Constant = { fg = "#A53500" },                                -- Constants - orange-red
-          Number = { fg = "#A53500" },                                  -- Numbers - orange-red
-          Boolean = { fg = "#A53500", bold = true },                    -- Booleans - orange-red
-          Character = { fg = "#1F6B2E" },                               -- Characters - green
-          Identifier = { fg = "#2E2E2E" },                              -- Identifiers - dark
-          Statement = { fg = "#7E2F92", bold = true },                  -- Statements - purple
-          Conditional = { fg = "#7E2F92", bold = true },                -- if/else - purple
-          Repeat = { fg = "#7E2F92", bold = true },                     -- loops - purple
-          Label = { fg = "#8F4700" },                                   -- Labels - orange
-          Operator = { fg = "#7E2F92" },                                -- Operators - purple
-          Exception = { fg = "#B82020", bold = true },                  -- Exceptions - red
-          PreProc = { fg = "#A53500" },                                 -- Preprocessor - orange-red
-          Include = { fg = "#B82020" },                                 -- Includes - red
-          Define = { fg = "#A53500" },                                  -- Defines - orange-red
-          Macro = { fg = "#A53500" },                                   -- Macros - orange-red
-          Special = { fg = "#A53500" },                                 -- Special - orange-red
-          SpecialChar = { fg = "#B82020" },                             -- Special chars - red
-          Delimiter = { fg = "#2E2E2E" },                               -- Delimiters - dark
-          SpecialComment = { fg = "#6B6B6B", bold = true },             -- Special comments - gray
-          Debug = { fg = "#B82020" },                                   -- Debug - red
+          -- Better contrast for various elements - professional palette
+          Constant = { fg = "#D97706" },                                -- Constants - amber
+          Number = { fg = "#D97706" },                                  -- Numbers - amber
+          Boolean = { fg = "#D97706", bold = true },                    -- Booleans - amber
+          Character = { fg = "#0F3460" },                               -- Characters - dark blue
+          Identifier = { fg = "#1F2937" },                              -- Identifiers - dark gray
+          Statement = { fg = "#7C3AED", bold = true },                  -- Statements - purple
+          Conditional = { fg = "#7C3AED", bold = true },                -- if/else - purple
+          Repeat = { fg = "#7C3AED", bold = true },                     -- loops - purple
+          Label = { fg = "#D97706" },                                   -- Labels - amber
+          Operator = { fg = "#7C3AED" },                                -- Operators - purple
+          Exception = { fg = "#DC2626", bold = true },                  -- Exceptions - red
+          PreProc = { fg = "#D97706" },                                 -- Preprocessor - amber
+          Include = { fg = "#DC2626" },                                 -- Includes - red
+          Define = { fg = "#D97706" },                                  -- Defines - amber
+          Macro = { fg = "#D97706" },                                   -- Macros - amber
+          Special = { fg = "#D97706" },                                 -- Special - amber
+          SpecialChar = { fg = "#DC2626" },                             -- Special chars - red
+          Delimiter = { fg = "#1F2937" },                               -- Delimiters - dark gray
+          SpecialComment = { fg = "#6B7280", bold = true },             -- Special comments - gray
+          Debug = { fg = "#DC2626" },                                   -- Debug - red
         }
       end,
       theme = "wave", -- Load "wave" theme (will switch based on background option)

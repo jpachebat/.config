@@ -119,6 +119,7 @@ return {
           tex = { 'lsp', 'snippets', 'omni', 'path', 'buffer' }, -- Snippets higher priority in LaTeX
           lua = { 'lsp', 'path', 'snippets', 'buffer' },
           python = { 'lsp', 'path', 'snippets', 'buffer' },
+          markdown = { 'obsidian', 'lsp', 'path', 'snippets', 'buffer' }, -- Obsidian wiki-links first
         },
         providers = {
           lsp = {
@@ -219,6 +220,16 @@ return {
             max_items = 50,
             min_keyword_length = 1,
           },
+          obsidian = {
+            name = 'obsidian',
+            module = 'blink.compat.source',
+            enabled = function()
+              return vim.bo.filetype == 'markdown'
+            end,
+            max_items = 50,
+            min_keyword_length = 2,
+            score_offset = 10, -- Prioritize obsidian completions
+          },
         },
       },
       completion = {
@@ -245,7 +256,9 @@ return {
           show_on_blocked_trigger_characters = { ' ', '\n', '\t' },
           show_on_accept_on_trigger_character = true,
           show_on_insert_on_trigger_character = true,
-          show_on_x_blocked_trigger_characters = { "'", '"', '(' }
+          show_on_x_blocked_trigger_characters = { "'", '"', '(' },
+          -- Trigger for Obsidian wiki-links [[
+          additional_trigger_characters = { '[', '#' }, -- [ for [[links]], # for #tags
         },
         menu = {
           max_height = 15,

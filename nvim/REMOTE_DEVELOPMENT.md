@@ -21,6 +21,7 @@ Complete guide for editing files on Cholesky cluster using local Neovim with ful
 ## Commands Reference
 
 **Mounting:**
+(need to `source ~/.bash_profile` first)
 ```bash
 mount-cholesky           # Mount both home AND work
 mount-cholesky-home      # Mount only home

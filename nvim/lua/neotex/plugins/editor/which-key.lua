@@ -616,23 +616,31 @@ return {
     end
 
     wk.add({
-      -- Group header (markdown files only)
-      { "<leader>O", group = "obsidian", icon = "󰈙", cond = is_markdown },
+      -- Group header (always visible)
+      { "<leader>O", group = "obsidian", icon = "󰈙" },
 
-      -- Daily notes
+      -- Daily notes (require markdown context for Obsidian commands)
       { "<leader>Od", obsidian_cmd("ObsidianToday"), desc = "today", icon = "󰃰", cond = is_markdown },
-      { "<leader>Oy", obsidian_cmd("ObsidianPrevDay"), desc = "prev day (wknd)", icon = "󰮲", cond = is_markdown },
-      { "<leader>Ot", obsidian_cmd("ObsidianNextDay"), desc = "next day (wknd)", icon = "󰮰", cond = is_markdown },
+      { "<leader>Oy", obsidian_cmd("ObsidianPrevDay"), desc = "prev day", icon = "󰮲", cond = is_markdown },
+      { "<leader>Ot", obsidian_cmd("ObsidianNextDay"), desc = "next day", icon = "󰮰", cond = is_markdown },
+
+      -- Weekly notes (work from anywhere - no markdown requirement)
+      { "<leader>Ow", function() require("neotex.obsidian.weekly-commands").open_this_week() end, desc = "this week", icon = "󰨲" },
+      { "<leader>On", function() require("neotex.obsidian.weekly-commands").open_next_week() end, desc = "next week", icon = "󰨲" },
+      { "<leader>Op", function() require("neotex.obsidian.weekly-commands").open_previous_week() end, desc = "previous week", icon = "󰨲" },
 
       -- Note management
-      { "<leader>On", obsidian_cmd("ObsidianNew"), desc = "new note", icon = "󰈙", cond = is_markdown },
+      { "<leader>ON", obsidian_cmd("ObsidianNew"), desc = "new note", icon = "󰈙", cond = is_markdown },
       { "<leader>Os", obsidian_cmd("ObsidianSearch"), desc = "search", icon = "󰍉", cond = is_markdown },
       { "<leader>Oq", obsidian_cmd("ObsidianQuickSwitch"), desc = "quick switch", icon = "󰒕", cond = is_markdown },
       { "<leader>Ob", obsidian_cmd("ObsidianBacklinks"), desc = "backlinks", icon = "󰌹", cond = is_markdown },
       { "<leader>Ol", obsidian_cmd("ObsidianLinks"), desc = "links", icon = "󰌷", cond = is_markdown },
 
+      -- Open in Obsidian app
+      { "<leader>Oo", function() require("neotex.obsidian.open-app").open_in_obsidian() end, desc = "open in app", icon = "󰏋", cond = is_markdown },
+
       -- Templates
-      { "<leader>Op", obsidian_cmd("ObsidianTemplate"), desc = "template", icon = "󰈭", cond = is_markdown },
+      { "<leader>OT", obsidian_cmd("ObsidianTemplate"), desc = "template", icon = "󰈭", cond = is_markdown },
     })
 
     -- ============================================================================
@@ -714,6 +722,7 @@ return {
     wk.add({
       { "<leader>t", group = "todo", icon = "󰄬" },
       { "<leader>td", "<cmd>DeadlineTelescope<CR>", desc = "deadlines (by date)", icon = "󱫥" },
+      { "<leader>tk", "<cmd>TasksTelescope<CR>", desc = "tasks (by date)", icon = "󰄬" },
       { "<leader>tl", "<cmd>TodoLocList<CR>", desc = "todo location list", icon = "󰈙" },
       { "<leader>tn", function() require("todo-comments").jump_next() end, desc = "next todo", icon = "󰮰" },
       { "<leader>tp", function() require("todo-comments").jump_prev() end, desc = "previous todo", icon = "󰮲" },

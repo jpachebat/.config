@@ -1,0 +1,65 @@
+-- Distant.nvim - Remote development plugin
+-- Edit files on remote servers via SSH with local Neovim
+--
+-- FEATURES:
+-- - Edit remote files with full local Neovim config
+-- - Fast LSP (runs on remote server)
+-- - Handles large files efficiently (no full transfer)
+-- - Auto-reconnects on connection drops
+-- - Works with all local plugins (Claude, Avante, etc.)
+--
+-- SETUP REQUIRED:
+-- 1. Install distant CLI on local: cargo install distant (or brew install distant)
+-- 2. Install distant CLI on remote: cargo install distant
+-- 3. Launch server: :DistantLaunch ssh://user@host
+-- 4. Open files: :e distant://host//path/to/file
+--
+-- KEYBINDINGS:
+-- <leader>rL - Launch distant server (connect to remote)
+-- <leader>rC - Connect to existing server
+-- <leader>rD - Disconnect from server
+-- <leader>ro - Open remote file browser
+
+return {
+  'chipsenkbeil/distant.nvim',
+  branch = 'v0.3',
+  cmd = { "DistantLaunch", "DistantConnect", "DistantInstall", "DistantOpen" },
+  keys = {
+    { "<leader>rL", "<cmd>DistantLaunch<CR>", desc = "launch distant server" },
+    { "<leader>rC", "<cmd>DistantConnect<CR>", desc = "connect to distant" },
+    { "<leader>rD", "<cmd>DistantSessionInfo<CR>", desc = "distant session info" },
+    { "<leader>ro", "<cmd>DistantOpen<CR>", desc = "open remote file" },
+  },
+  config = function()
+    require('distant'):setup({
+      -- Default connection settings
+      ['*'] = {
+        -- Use SSH by default
+        launch = {
+          default = {
+            binary = 'distant',
+          },
+        },
+      },
+
+      -- Customize behavior
+      servers = {
+        ['*'] = {
+          connect = {
+            default = {
+              -- Keep connection alive
+              options = {
+                timeout = 30,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    -- Helpful autocomplete for common remote hosts
+    vim.api.nvim_create_user_command('DistantMIT', function()
+      vim.cmd('DistantLaunch ssh://brastmck@eofe10.mit.edu')
+    end, { desc = "Connect to MIT cluster" })
+  end
+}
