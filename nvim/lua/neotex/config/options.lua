@@ -63,7 +63,7 @@ function M.setup()
 
     -- EDIT
     spell = true,                   -- turns on spellchecker
-    spelllang = { 'en_us', 'fr' },  -- sets spelling dictionary (English + French)
+    spelllang = { 'en_us', 'fr', 'de' },  -- sets spelling dictionary (English + French + German)
     clipboard = "unnamedplus",      -- always use system clipboard (OSC52 handles SSH)
     mouse = "a",                    -- allow the mouse to be used in neovim
     mousescroll = "ver:2,hor:4",    -- change the speed of the scroll wheel
