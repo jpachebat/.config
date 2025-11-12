@@ -522,6 +522,7 @@ return {
         "--with-filename",
         "--line-number",
         "--column",
+        "--glob", "!Templates/",  -- Exclude Templates directory
         "^\\s*[*-]\\s*\\[[x ]\\]",  -- Support both * and - for tasks
         cwd
       }
