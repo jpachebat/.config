@@ -123,15 +123,16 @@ return {
     -- Task and Deadline parsing utilities
     -- ============================================================================
 
-    -- Parse task with @date and optional time: @YYMMDD HH:MM or @YYYYMMDD HH:MM
+    -- Parse task with @date and optional time
+    -- Supports: @251120, @20251120, @251120 18:00, @251120 1800, @251120 18
     local function parse_task_datetime(raw)
       if not raw or raw == "" then
         return nil
       end
 
       -- Match @date followed by optional time
-      -- Supports: @251120, @20251120, @251120 14:30, @20251120 14:30
-      local date_part, time_part = raw:match("@(%d+)%s*(%d?%d?:?%d?%d?)")
+      -- Supports: @251120, @20251120, @251120 18:00, @251120 1800, @251120 18
+      local date_part, time_part = raw:match("@(%d+)%s*(%d*:?%d*)")
 
       if not date_part then
         return nil
@@ -159,15 +160,37 @@ return {
         return nil
       end
 
-      -- Parse optional time
+      -- Parse optional time (supports HH:MM, HHMM, and HH)
       local hour, minute = 0, 0
       local has_time = false
       if time_part and time_part ~= "" then
-        local h, m = time_part:match("(%d%d?):(%d%d)")
+        -- Try HH:MM format first
+        local h, m = time_part:match("^(%d%d?):(%d%d)$")
         if h and m then
           hour = tonumber(h)
           minute = tonumber(m)
           if hour >= 0 and hour <= 23 and minute >= 0 and minute <= 59 then
+            has_time = true
+          else
+            hour, minute = 0, 0
+          end
+        elseif #time_part == 4 then
+          -- Try HHMM format (4 digits, no colon) e.g., 1800 = 18:00
+          h = time_part:sub(1, 2)
+          m = time_part:sub(3, 4)
+          hour = tonumber(h)
+          minute = tonumber(m)
+          if hour and minute and hour >= 0 and hour <= 23 and minute >= 0 and minute <= 59 then
+            has_time = true
+          else
+            hour, minute = 0, 0
+          end
+        elseif #time_part == 2 then
+          -- Try HH format (2 digits, assume :00) e.g., 18 = 18:00
+          h = time_part
+          hour = tonumber(h)
+          minute = 0
+          if hour and hour >= 0 and hour <= 23 then
             has_time = true
           else
             hour, minute = 0, 0
@@ -184,7 +207,7 @@ return {
         date_label = string.format("%04d-%02d-%02d", year, month, day),
         time_label = has_time and string.format("%02d:%02d", hour, minute) or nil,
         datetime_label = has_time
-          and string.format("%04d-%02d-%02d %02d:%02d", year, month, day, hour, minute)
+          and string.format("%02d:%02d %04d-%02d-%02d", hour, minute, year, month, day)  -- Time first
           or string.format("%04d-%02d-%02d", year, month, day),
         ts = ts,
         has_time = has_time,
@@ -235,7 +258,7 @@ return {
       return nil
     end
 
-    local function relative_meta(ts, now)
+    local function relative_meta(ts, now, has_time)
       if not ts then
         return "—", "Comment"
       end
@@ -247,31 +270,59 @@ return {
         year = task_date.year,
         month = task_date.month,
         day = task_date.day,
-        hour = 0,
-        min = 0,
-        sec = 0
+        hour = 0, min = 0, sec = 0
       })
 
       local today_midnight = os.time({
         year = today_date.year,
         month = today_date.month,
         day = today_date.day,
-        hour = 0,
-        min = 0,
-        sec = 0
+        hour = 0, min = 0, sec = 0
       })
 
       local diff_days = math.floor((task_midnight - today_midnight) / 86400)
 
+      -- For tasks WITH time on today, show minute/hour precision
+      if diff_days == 0 and has_time then
+        local diff_seconds = ts - now
+        local diff_minutes = math.floor(diff_seconds / 60)
+        local abs_minutes = math.abs(diff_minutes)
+
+        -- Show minutes if < 60 minutes
+        if abs_minutes < 60 then
+          if diff_minutes < 0 then
+            return string.format("-%dm", abs_minutes), "DiagnosticError"  -- Red (overdue)
+          else
+            return string.format("+%dm", diff_minutes), "DiagnosticWarn"  -- Orange (coming up)
+          end
+        else
+          -- Show hours if >= 60 minutes
+          local diff_hours = math.floor(math.abs(diff_seconds) / 3600)
+          if diff_seconds < 0 then
+            return string.format("-%dh", diff_hours), "DiagnosticError"  -- Red (overdue)
+          else
+            return string.format("+%dh", diff_hours), "DiagnosticWarn"  -- Orange (coming up)
+          end
+        end
+      end
+
+      -- Red: Overdue (in the past)
       if diff_days < 0 then
         return string.format("%dd", diff_days), "DiagnosticError"
-      elseif diff_days == 0 then
-        return "today", "DiagnosticWarn"
-      elseif diff_days <= 3 then
-        return string.format("+%dd", diff_days), "DiagnosticWarn"
-      else
-        return string.format("+%dd", diff_days), "DiagnosticHint"
       end
+
+      -- Orange: Today only (without time or already handled above)
+      if diff_days == 0 then
+        return "today", "DiagnosticWarn"
+      end
+
+      -- Purple: This week (1-6 days from now)
+      if diff_days >= 1 and diff_days <= 6 then
+        return string.format("+%dd", diff_days), "DiagnosticInfo"
+      end
+
+      -- Gray: After this week (7+ days)
+      return string.format("+%dd", diff_days), "Comment"
     end
 
     local function parse_cmd_args(str)
@@ -525,10 +576,10 @@ return {
         separator = " ",
         items = {
           { width = icon_width },
-          { width = 16 },
-          { width = 8 },
-          { width = 30 },
-          { remaining = true },
+          { width = 8 },   -- relative (today/+1d/time) - COLUMN 1
+          { width = 16 },  -- datetime - COLUMN 2
+          { width = 30 },  -- location
+          { remaining = true },  -- task text
         },
       })
 
@@ -537,15 +588,43 @@ return {
 
       for _, item in ipairs(results) do
         local has_date = item.datetime_info ~= nil
+        local has_time = has_date and item.datetime_info.has_time or false
         local ts = has_date and item.datetime_info.ts or nil
-        -- Tasks with date sort first, then by timestamp
-        -- Tasks without date sort last (math.huge * 2)
-        local sort_value = ts or (math.huge * 2)
+
+        -- Calculate sort_value
+        local sort_value
+        if not has_date then
+          -- No date: sort last
+          sort_value = 5e14
+        elseif has_time then
+          -- Has date and time: use timestamp
+          sort_value = ts
+        else
+          -- Has date but no time: put at end of that day (23:59)
+          local task_date = os.date("*t", ts)
+          local today_date = os.date("*t", now)
+
+          -- Check if it's today
+          if task_date.year == today_date.year and
+             task_date.month == today_date.month and
+             task_date.day == today_date.day then
+            -- Today without time: put after timed tasks (end of day)
+            sort_value = ts + 86400 - 1  -- Add 23h59m59s
+          else
+            -- Other day without time: use midnight timestamp
+            sort_value = ts
+          end
+        end
 
         local datetime_label = has_date and item.datetime_info.datetime_label or "—"
         local relative_text, relative_hl
         if has_date then
-          relative_text, relative_hl = relative_meta(ts, now)
+          relative_text, relative_hl = relative_meta(ts, now, has_time)
+
+          -- If it's today AND has time, show time instead of "today"
+          if relative_text == "today" and has_time then
+            relative_text = item.datetime_info.time_label  -- Show just the time (HH:MM)
+          end
         else
           relative_text = "no date"
           relative_hl = "Comment"
@@ -553,8 +632,12 @@ return {
 
         local location = string.format("%s:%d", vim.fn.fnamemodify(item.filename, ":~:."), item.lnum)
 
+        -- Check if task is from inbox (case-insensitive)
+        local is_inbox = item.filename:lower():match("inbox%.md$") ~= nil
+
         -- Extract task text (remove checkbox and @date, support both - and *)
-        local task_text = item.text:gsub("^%s*[*%-]%s*%[[ ]%]%s*", ""):gsub("@%d+%s*%d*:?%d*", "")
+        local task_text = item.text:gsub("^%s*[*%-]%s*%[[%s>x]%]%s*", "")
+          :gsub("@[%+%-]?%d+%s*%d*:?%d*", "")
         task_text = vim.trim(task_text)
         if task_text == "" then
           task_text = "—"
@@ -571,6 +654,8 @@ return {
           location = location,
           task_text = task_text,
           has_date = has_date,
+          has_time = has_time,
+          is_inbox = is_inbox,
         })
       end
 
@@ -585,35 +670,93 @@ return {
         return a.sort_value < b.sort_value
       end)
 
+      -- Insert separator between today tasks and non-today tasks
+      local last_today_index = nil
+      for i, entry in ipairs(entries) do
+        local is_today = entry.relative_text == "today"
+          or (entry.relative_text and entry.relative_text:match("^[%+%-]%d+m$"))  -- minute diffs
+          or (entry.relative_text and entry.relative_text:match("^[%+%-]%d+h$"))  -- hour diffs
+          or (entry.relative_text and entry.relative_text:match("^%d%d:%d%d$"))   -- time display
+
+        if is_today then
+          last_today_index = i
+        elseif last_today_index then
+          -- Found first non-today task, stop here
+          break
+        end
+      end
+
+      -- Insert separator after last today task
+      if last_today_index and last_today_index < #entries then
+        table.insert(entries, last_today_index + 1, {
+          is_separator = true,
+          sort_value = 0,
+        })
+      end
+
+      -- Find the closest task to do (first task with timestamp >= now)
+      local cursor_position = 1
+      for i, entry in ipairs(entries) do
+        if not entry.is_separator and entry.sort_value and entry.sort_value >= now then
+          cursor_position = i
+          break
+        end
+      end
+
       local finder = finders.new_table({
         results = entries,
         entry_maker = function(item)
           return {
             value = item,
             display = function()
-              -- Dimmed icon and text for tasks without date
-              local display_icon = item.has_date and icon or "○"
-              local display_icon_hl = item.has_date and icon_hl or "Comment"
-              local display_text_hl = item.has_date and "Normal" or "Comment"
-              local display_date_hl = item.has_date and icon_hl or "Comment"
+              -- Handle separator
+              if item.is_separator then
+                return "─────────────────────────────────────────────────────────────────────────"
+              end
+
+              local display_icon, display_icon_hl, display_text_hl, display_date_hl, display_relative_hl
+
+              if item.is_inbox then
+                -- Inbox tasks: special icon and purple color (same as week tasks)
+                display_icon = "󰝖"  -- inbox icon
+                display_icon_hl = "DiagnosticInfo"  -- Purple (same as +1d, +2d, etc.)
+                display_text_hl = "DiagnosticInfo"
+                display_date_hl = "DiagnosticInfo"
+                display_relative_hl = item.relative_hl  -- Keep date-based color (orange for today, etc.)
+              elseif item.has_date then
+                -- Regular dated tasks
+                display_icon = icon
+                display_icon_hl = icon_hl
+                -- Only today tasks get Normal text, others get Comment (grey)
+                display_text_hl = (item.relative_text == "today" or (item.relative_text and item.relative_text:match("^[%+%-]%d+m$")) or (item.relative_text and item.relative_text:match("^%d%d:%d%d$"))) and "Normal" or "Comment"
+                display_date_hl = icon_hl
+                display_relative_hl = item.relative_hl
+              else
+                -- Undated tasks: dimmed
+                display_icon = "○"
+                display_icon_hl = "Comment"
+                display_text_hl = "Comment"
+                display_date_hl = "Comment"
+                display_relative_hl = "Comment"
+              end
 
               return displayer({
                 { display_icon, display_icon_hl },
-                { item.datetime_label, display_date_hl },
-                { item.relative_text, item.relative_hl },
+                { item.relative_text, display_relative_hl },  -- COLUMN 1: relative
+                { item.datetime_label, display_date_hl },     -- COLUMN 2: datetime
                 { item.location, "Comment" },
                 { item.task_text, display_text_hl },
               })
             end,
-            ordinal = table.concat({
+            ordinal = item.is_separator and "" or table.concat({
               item.datetime_label,
               item.relative_text,
               item.location,
               item.task_text,
             }, " "),
-            filename = item.filename,
-            lnum = item.lnum,
-            col = item.col,
+            filename = item.is_separator and "" or item.filename,
+            lnum = item.is_separator and 0 or item.lnum,
+            col = item.is_separator and 0 or item.col,
           }
         end,
       })
@@ -623,13 +766,15 @@ return {
         finder = finder,
         sorter = conf.generic_sorter(user_opts),
         previewer = conf.grep_previewer(user_opts),
+        default_selection_index = cursor_position,  -- Position cursor on closest task to do
         attach_mappings = function(prompt_bufnr)
           actions.select_default:replace(function()
             local selection = action_state.get_selected_entry()
-            actions.close(prompt_bufnr)
-            if not selection or not selection.filename then
+            -- Skip separator lines
+            if not selection or not selection.filename or selection.filename == "" then
               return
             end
+            actions.close(prompt_bufnr)
             -- Use edit! to avoid E37 error when buffer has unsaved changes
             vim.cmd("edit! " .. vim.fn.fnameescape(selection.filename))
             vim.api.nvim_win_set_cursor(0, {
