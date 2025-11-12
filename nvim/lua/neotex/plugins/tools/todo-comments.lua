@@ -833,12 +833,7 @@ return {
         prompt_title = false,         -- Hide prompt title
         results_title = false,        -- Hide results title
         prompt_prefix = "",           -- Remove prompt ">" prefix (this is for the input line)
-        border = true,                -- Add light frame around telescope window
-        borderchars = {
-          prompt = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-          results = { "─", "│", "─", "│", "├", "┤", "┘", "└" },
-          preview = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-        },
+        border = false,               -- Remove all borders
         finder = finder,
         sorter = conf.generic_sorter(user_opts),
         previewer = conf.grep_previewer(user_opts),
