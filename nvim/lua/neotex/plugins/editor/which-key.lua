@@ -64,9 +64,10 @@ return {
       },
     },
     icons = {
-      breadcrumb = "»",
-      separator = "➜",
-      group = "+",
+      breadcrumb = "",
+      separator = "",
+      group = "",
+      mappings = false,  -- Disable all built-in icons
     },
     layout = {
       width = { min = 20, max = 50 },
