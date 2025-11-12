@@ -845,14 +845,6 @@ return {
           height = 0.99,         -- Take 99% of screen height
         },
         attach_mappings = function(prompt_bufnr)
-          -- Hide cursor in prompt window
-          local prompt_win = vim.fn.bufwinid(prompt_bufnr)
-          if prompt_win ~= -1 then
-            vim.api.nvim_win_set_option(prompt_win, 'cursorline', false)
-            -- Hide cursor by setting it to transparent
-            vim.cmd('highlight Cursor blend=100')
-          end
-
           actions.select_default:replace(function()
             local selection = action_state.get_selected_entry()
             -- Skip separator lines
