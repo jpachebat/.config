@@ -770,6 +770,8 @@ return {
         layout_strategy = "horizontal",
         layout_config = {
           preview_width = 0.25,  -- Preview takes 25% of width (list gets 75%)
+          width = 0.95,          -- Take 95% of screen width
+          height = 0.95,         -- Take 95% of screen height
         },
         attach_mappings = function(prompt_bufnr)
           actions.select_default:replace(function()
