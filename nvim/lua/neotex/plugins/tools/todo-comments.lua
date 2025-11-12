@@ -603,12 +603,18 @@ return {
           -- Has date but no time: put at end of that day (23:59)
           local task_date = os.date("*t", ts)
           local today_date = os.date("*t", now)
+          local tomorrow_date = os.date("*t", now + 86400)
 
-          -- Check if it's today
-          if task_date.year == today_date.year and
-             task_date.month == today_date.month and
-             task_date.day == today_date.day then
-            -- Today without time: put after timed tasks (end of day)
+          -- Check if it's today or tomorrow
+          local is_today = task_date.year == today_date.year and
+                           task_date.month == today_date.month and
+                           task_date.day == today_date.day
+          local is_tomorrow = task_date.year == tomorrow_date.year and
+                              task_date.month == tomorrow_date.month and
+                              task_date.day == tomorrow_date.day
+
+          if is_today or is_tomorrow then
+            -- Today/tomorrow without time: put after timed tasks (end of day)
             sort_value = ts + 86400 - 1  -- Add 23h59m59s
           else
             -- Other day without time: use midnight timestamp
@@ -670,25 +676,40 @@ return {
         return a.sort_value < b.sort_value
       end)
 
-      -- Insert separator between today tasks and non-today tasks
+      -- Insert separators between today/tomorrow/other tasks
       local last_today_index = nil
+      local last_tomorrow_index = nil
+
       for i, entry in ipairs(entries) do
         local is_today = entry.relative_text == "today"
           or (entry.relative_text and entry.relative_text:match("^[%+%-]%d+m$"))  -- minute diffs
           or (entry.relative_text and entry.relative_text:match("^[%+%-]%d+h$"))  -- hour diffs
           or (entry.relative_text and entry.relative_text:match("^%d%d:%d%d$"))   -- time display
 
+        local is_tomorrow = entry.relative_text == "+1d"
+
         if is_today then
           last_today_index = i
-        elseif last_today_index then
-          -- Found first non-today task, stop here
-          break
+        elseif is_tomorrow then
+          last_tomorrow_index = i
         end
       end
 
-      -- Insert separator after last today task
+      -- Insert separator after last today task (before tomorrow)
       if last_today_index and last_today_index < #entries then
         table.insert(entries, last_today_index + 1, {
+          is_separator = true,
+          sort_value = 0,
+        })
+        -- Adjust tomorrow index since we inserted a separator
+        if last_tomorrow_index and last_tomorrow_index > last_today_index then
+          last_tomorrow_index = last_tomorrow_index + 1
+        end
+      end
+
+      -- Insert separator after last tomorrow task (before other days)
+      if last_tomorrow_index and last_tomorrow_index < #entries then
+        table.insert(entries, last_tomorrow_index + 1, {
           is_separator = true,
           sort_value = 0,
         })
