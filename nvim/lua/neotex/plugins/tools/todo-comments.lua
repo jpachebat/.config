@@ -732,7 +732,13 @@ return {
             display = function()
               -- Handle separator
               if item.is_separator then
-                return "─────────────────────────────────────────────────────────────────────────"
+                -- Calculate approximate display width (icon + relative + datetime + location + some task text)
+                local total_width = 80  -- Approximate width for centering
+                local separator_length = 60
+                local padding = math.floor((total_width - separator_length) / 2)
+                local left_pad = string.rep(" ", padding)
+                local separator_line = string.rep("─", separator_length)
+                return left_pad .. separator_line
               end
 
               local display_icon, display_icon_hl, display_text_hl, display_date_hl, display_relative_hl
