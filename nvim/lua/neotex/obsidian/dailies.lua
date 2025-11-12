@@ -95,6 +95,11 @@ function M.ensure_daily_heading(client, note)
     return
   end
 
+  -- Remove weekday from base_title if it already starts with it
+  -- This prevents "Wed Wed Wed..." bug on repeated opens
+  local weekday_pattern = "^" .. weekday .. "%s+"
+  base_title = base_title:gsub(weekday_pattern, "")
+
   local bufnr = note.bufnr
   if not bufnr or not vim.api.nvim_buf_is_loaded(bufnr) then
     return

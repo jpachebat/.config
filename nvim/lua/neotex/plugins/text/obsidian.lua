@@ -121,11 +121,57 @@ return {
 
           return string.format("[[%s]]", week_filename)
         end,
+        -- Task date format (@YYMMDD)
+        task_date = function()
+          local filename = vim.fn.expand("%:t:r")
+          local note_date = filename:match("^%d%d%d%d%-%d%d%-%d%d$") and filename or os.date("%Y-%m-%d")
+          local year, month, day = note_date:match("(%d+)-(%d+)-(%d+)")
+          if not (year and month and day) then
+            return ""
+          end
+          return string.format("@%02d%02d%02d", tonumber(year) % 100, tonumber(month), tonumber(day))
+        end,
       },
     },
     callbacks = {
       enter_note = function(client, note)
         dailies.ensure_daily_heading(client, note)
+
+        -- Apply template substitutions for daily notes if not already applied
+        if dailies.is_daily_note(client, note) then
+          vim.defer_fn(function()
+            if note.bufnr and vim.api.nvim_buf_is_loaded(note.bufnr) then
+              -- Get buffer lines
+              local lines = vim.api.nvim_buf_get_lines(note.bufnr, 0, -1, false)
+              local modified = false
+
+              -- Apply substitutions
+              for i, line in ipairs(lines) do
+                local new_line = line
+
+                -- Replace each substitution pattern
+                for key, func in pairs(client.opts.templates.substitutions) do
+                  local pattern = "{{" .. key .. "}}"
+                  if new_line:find(pattern, 1, true) then
+                    local value = func()
+                    new_line = new_line:gsub(pattern:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1"), value)
+                    modified = true
+                  end
+                end
+
+                if new_line ~= line then
+                  lines[i] = new_line
+                end
+              end
+
+              -- Update buffer if modifications were made
+              if modified then
+                vim.api.nvim_buf_set_lines(note.bufnr, 0, -1, false, lines)
+                vim.bo[note.bufnr].modified = false  -- Mark as not modified after template substitution
+              end
+            end
+          end, 150)
+        end
       end,
     },
 

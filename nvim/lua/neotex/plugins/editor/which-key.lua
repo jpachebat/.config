@@ -696,13 +696,37 @@ return {
 
     wk.add({
       { "<leader>t", group = "todo", icon = "󰄬" },
+      { "<leader>tc", function()
+        local inbox_path = vim.fn.expand("~/work/notes/inbox.md")
+        -- Create inbox.md if it doesn't exist
+        if vim.fn.filereadable(inbox_path) == 0 then
+          vim.fn.writefile({
+            "# Inbox",
+            "",
+            "Quick captures to process later.",
+            "",
+            "## Captures",
+            "",
+          }, inbox_path)
+        end
+        -- Open in vertical split at bottom
+        vim.cmd("botright split " .. vim.fn.fnameescape(inbox_path))
+        -- Jump to end of file
+        vim.cmd("normal! G")
+        -- Enter insert mode on new line
+        vim.cmd("normal! o")
+        vim.cmd("startinsert")
+      end, desc = "quick capture (inbox)", icon = "󰝖" },
       { "<leader>td", "<cmd>DeadlineTelescope<CR>", desc = "deadlines (by date)", icon = "󱫥" },
+      { "<leader>te", function() require("neotex.util.date-expansion").expand_relative_date() end, desc = "expand @+N to date", icon = "󰃰" },
       { "<leader>tk", "<cmd>TasksTelescope<CR>", desc = "tasks (by date)", icon = "󰄬" },
       { "<leader>tl", "<cmd>TodoLocList<CR>", desc = "todo location list", icon = "󰈙" },
       { "<leader>tn", function() require("todo-comments").jump_next() end, desc = "next todo", icon = "󰮰" },
       { "<leader>tp", function() require("todo-comments").jump_prev() end, desc = "previous todo", icon = "󰮲" },
       { "<leader>tq", "<cmd>TodoQuickFix<CR>", desc = "todo quickfix", icon = "󰁨" },
+      { "<leader>ts", function() require("neotex.util.todo-split").open_todo_split() end, desc = "todo section split", icon = "" },
       { "<leader>tt", "<cmd>TodoTelescope<CR>", desc = "todo telescope (all)", icon = "󰄬" },
+      { "<leader>tx", "<cmd>CompletedTasksTelescope<CR>", desc = "completed tasks", icon = "☑" },
     })
 
     -- ============================================================================
