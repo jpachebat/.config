@@ -783,7 +783,7 @@ return {
       })
 
       pickers.new(user_opts, {
-        prompt_title = string.format("Tasks (%d with date, %d total)", tasks_with_date, #entries),
+        prompt_title = false,         -- Hide prompt title
         results_title = false,        -- Hide results title
         prompt_prefix = "",           -- Remove prompt ">" prefix (this is for the input line)
         border = true,                -- Add light frame around telescope window
