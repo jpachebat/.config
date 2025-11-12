@@ -728,7 +728,7 @@ return {
                 display_icon = icon
                 display_icon_hl = icon_hl
                 -- Only today tasks get Normal text, others get Comment (grey)
-                display_text_hl = (item.relative_text == "today" or (item.relative_text and item.relative_text:match("^[%+%-]%d+m$")) or (item.relative_text and item.relative_text:match("^%d%d:%d%d$"))) and "Normal" or "Comment"
+                display_text_hl = (item.relative_text == "today" or (item.relative_text and item.relative_text:match("^[%+%-]%d+[mh]$")) or (item.relative_text and item.relative_text:match("^%d%d:%d%d$"))) and "Normal" or "Comment"
                 display_date_hl = icon_hl
                 display_relative_hl = item.relative_hl
               else

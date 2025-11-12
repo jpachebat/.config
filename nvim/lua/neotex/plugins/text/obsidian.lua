@@ -124,9 +124,10 @@ return {
         -- Task date format (@YYMMDD)
         task_date = function()
           local filename = vim.fn.expand("%:t:r")
-          local note_date = filename:match("^%d%d%d%d%-%d%d%-%d%d$") and filename or os.date("%Y-%m-%d")
-          local year, month, day = note_date:match("(%d+)-(%d+)-(%d+)")
+          -- Only use filename if it matches daily note pattern (YYYY-MM-DD)
+          local year, month, day = filename:match("^(%d%d%d%d)%-(%d%d)%-(%d%d)$")
           if not (year and month and day) then
+            -- No fallback to os.date() - return empty if filename doesn't match
             return ""
           end
           return string.format("@%02d%02d%02d", tonumber(year) % 100, tonumber(month), tonumber(day))
