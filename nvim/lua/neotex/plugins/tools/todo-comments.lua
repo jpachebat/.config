@@ -572,16 +572,6 @@ return {
       local icon = "󰄬"
       local icon_hl = "TodoFgTODO"
       local icon_width = 2
-      local displayer = entry_display.create({
-        separator = " ",
-        items = {
-          { width = icon_width },
-          { width = 8 },   -- relative (today/+1d/time) - COLUMN 1
-          { width = 16 },  -- datetime - COLUMN 2
-          { width = 50 },  -- location (aligned on /) - COLUMN 3
-          { remaining = true },  -- task text
-        },
-      })
 
       local now = os.time()
       local entries = {}
@@ -747,6 +737,29 @@ return {
           end
         end
       end
+
+      -- Calculate max location width for dynamic column sizing
+      local max_location_width = 0
+      for _, entry in ipairs(entries) do
+        if not entry.is_separator and entry.aligned_location then
+          local len = vim.fn.strdisplaywidth(entry.aligned_location)
+          if len > max_location_width then
+            max_location_width = len
+          end
+        end
+      end
+
+      -- Create displayer with dynamic location column width
+      local displayer = entry_display.create({
+        separator = " ",
+        items = {
+          { width = icon_width },
+          { width = 8 },   -- relative (today/+1d/time) - COLUMN 1
+          { width = 16 },  -- datetime - COLUMN 2
+          { width = max_location_width },  -- location (aligned on /) - COLUMN 3 (dynamic)
+          { remaining = true },  -- task text
+        },
+      })
 
       -- Find the closest task to do (first task with timestamp >= now)
       local cursor_position = 1
