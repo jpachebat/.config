@@ -715,14 +715,14 @@ return {
         })
       end
 
-      -- Calculate alignment for file paths (align on last /)
+      -- Calculate max directory length for alignment
       local max_dir_length = 0
       for _, entry in ipairs(entries) do
         if not entry.is_separator then
           local path = entry.location:match("^(.*):%d+$") or entry.location
-          local last_slash_pos = path:match("^.*()/"  ) or 0
-          if last_slash_pos > max_dir_length then
-            max_dir_length = last_slash_pos
+          local dir_part = path:match("^(.*)/") or ""
+          if #dir_part > max_dir_length then
+            max_dir_length = #dir_part
           end
         end
       end
@@ -731,14 +731,20 @@ return {
       for _, entry in ipairs(entries) do
         if not entry.is_separator then
           local path = entry.location:match("^(.*):%d+$") or entry.location
-          local line_num = entry.location:match(":(%d+)$") or ""
-          local last_slash_pos = path:match("^.*()/" ) or 0
-          local dir_part = last_slash_pos > 0 and path:sub(1, last_slash_pos - 1) or ""
-          local file_part = last_slash_pos > 0 and path:sub(last_slash_pos) or path
+          local dir_part = path:match("^(.*)/") or ""
+          local file_part = path:match("/([^/]+)$") or path
 
-          -- Right-align directory part
-          local padding = max_dir_length - last_slash_pos
-          entry.aligned_location = string.rep(" ", padding) .. dir_part .. file_part .. ":" .. line_num
+          -- Remove .md extension from file part
+          file_part = file_part:gsub("%.md$", "")
+
+          -- Left-align directory, pad to align slashes, add spaces around /
+          local padding = max_dir_length - #dir_part
+          if #dir_part > 0 then
+            entry.aligned_location = dir_part .. string.rep(" ", padding) .. " / " .. file_part
+          else
+            -- No directory, just show filename
+            entry.aligned_location = string.rep(" ", max_dir_length) .. "   " .. file_part
+          end
         end
       end
 
