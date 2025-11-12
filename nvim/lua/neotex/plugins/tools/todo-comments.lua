@@ -785,8 +785,7 @@ return {
       pickers.new(user_opts, {
         prompt_title = string.format("Tasks (%d with date, %d total)", tasks_with_date, #entries),
         results_title = false,        -- Hide results title
-        prompt_prefix = "",           -- Remove ">" prefix
-        selection_caret = "",         -- Remove selection arrow
+        prompt_prefix = "",           -- Remove prompt ">" prefix (this is for the input line)
         border = false,               -- Remove all window borders
         finder = finder,
         sorter = conf.generic_sorter(user_opts),
