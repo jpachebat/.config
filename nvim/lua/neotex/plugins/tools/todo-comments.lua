@@ -833,12 +833,7 @@ return {
         prompt_title = false,         -- Hide prompt title
         results_title = false,        -- Hide results title
         prompt_prefix = "",           -- Remove prompt ">" prefix (this is for the input line)
-        border = true,                -- Add light frame around telescope window
-        borderchars = {
-          prompt = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-          results = { "─", "│", "─", "│", "├", "┤", "┘", "└" },
-          preview = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-        },
+        border = false,               -- Remove all borders
         finder = finder,
         sorter = conf.generic_sorter(user_opts),
         previewer = conf.grep_previewer(user_opts),
@@ -846,8 +841,8 @@ return {
         layout_strategy = "horizontal",
         layout_config = {
           preview_width = 0.25,  -- Preview takes 25% of width (list gets 75%)
-          width = 0.95,          -- Take 95% of screen width
-          height = 0.95,         -- Take 95% of screen height
+          width = 0.99,          -- Take 99% of screen width
+          height = 0.99,         -- Take 99% of screen height
         },
         attach_mappings = function(prompt_bufnr)
           actions.select_default:replace(function()
