@@ -844,7 +844,7 @@ return {
           width = 0.99,          -- Take 99% of screen width
           height = 0.99,         -- Take 99% of screen height
         },
-        attach_mappings = function(prompt_bufnr)
+        attach_mappings = function(prompt_bufnr, map)
           actions.select_default:replace(function()
             local selection = action_state.get_selected_entry()
             -- Skip separator lines
@@ -859,6 +859,55 @@ return {
               math.max((selection.col or 1) - 1, 0),
             })
           end)
+
+          -- Add C-n to toggle checkbox and reload
+          map("i", "<C-n>", function()
+            local selection = action_state.get_selected_entry()
+            if not selection or not selection.filename or selection.filename == "" then
+              return
+            end
+
+            -- Save current buffer if modified
+            local current_buf = vim.api.nvim_get_current_buf()
+            if vim.bo[current_buf].modified then
+              vim.cmd("silent write")
+            end
+
+            -- Open file in background
+            local bufnr = vim.fn.bufadd(selection.filename)
+            vim.fn.bufload(bufnr)
+
+            -- Get the line and toggle checkbox
+            local lines = vim.api.nvim_buf_get_lines(bufnr, selection.lnum - 1, selection.lnum, false)
+            if #lines > 0 then
+              local line = lines[1]
+              local new_line = line
+
+              -- Toggle checkbox states: [ ] -> [>] -> [x] -> [ ]
+              if line:match("%[%s%]") then
+                new_line = line:gsub("%[%s%]", "[>]", 1)
+              elseif line:match("%[>%]") then
+                new_line = line:gsub("%[>%]", "[x]", 1)
+              elseif line:match("%[x%]") then
+                new_line = line:gsub("%[x%]", "[ ]", 1)
+              end
+
+              -- Update the line
+              vim.api.nvim_buf_set_lines(bufnr, selection.lnum - 1, selection.lnum, false, { new_line })
+
+              -- Save the file
+              vim.api.nvim_buf_call(bufnr, function()
+                vim.cmd("silent write")
+              end)
+            end
+
+            -- Close and reopen telescope
+            actions.close(prompt_bufnr)
+            vim.schedule(function()
+              open_tasks_picker(user_opts)
+            end)
+          end)
+
           return true
         end,
       }):find()
