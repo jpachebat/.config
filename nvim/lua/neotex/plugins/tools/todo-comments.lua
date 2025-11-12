@@ -786,7 +786,12 @@ return {
         prompt_title = string.format("Tasks (%d with date, %d total)", tasks_with_date, #entries),
         results_title = false,        -- Hide results title
         prompt_prefix = "",           -- Remove prompt ">" prefix (this is for the input line)
-        border = false,               -- Remove all window borders
+        border = true,                -- Add light frame around telescope window
+        borderchars = {
+          prompt = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+          results = { "─", "│", "─", "│", "├", "┤", "┘", "└" },
+          preview = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+        },
         finder = finder,
         sorter = conf.generic_sorter(user_opts),
         previewer = conf.grep_previewer(user_opts),
