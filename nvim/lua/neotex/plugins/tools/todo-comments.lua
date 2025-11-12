@@ -743,7 +743,7 @@ return {
               return displayer({
                 { display_icon, display_icon_hl },
                 { item.relative_text, display_relative_hl },  -- COLUMN 1: relative
-                { item.datetime_label, display_date_hl },     -- COLUMN 2: datetime
+                { string.format("%16s", item.datetime_label), display_date_hl },     -- COLUMN 2: datetime (right-aligned)
                 { item.location, "Comment" },
                 { item.task_text, display_text_hl },
               })
