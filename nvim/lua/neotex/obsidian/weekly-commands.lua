@@ -47,11 +47,33 @@ local function create_daily_note(date)
 ]]
   end
 
+  -- Parse date
+  local year, month, day = date:match("(%d%d%d%d)-(%d%d)-(%d%d)")
+
+  -- Calculate task_date (@YYMMDD format)
+  local task_date = string.format("@%02d%02d%02d", tonumber(year) % 100, tonumber(month), tonumber(day))
+
+  -- Calculate weekly note link
+  local date_obj = os.time({ year = tonumber(year), month = tonumber(month), day = tonumber(day), hour = 12 })
+  local week_info = os.date("*t", date_obj)
+  local week = tonumber(os.date("%V", date_obj))
+  local weekly_note = string.format("[[%d-W%02d]]", week_info.year, week)
+
+  -- Calculate previous and next day
+  local prev_ts = date_obj - 86400
+  local next_ts = date_obj + 86400
+  local previous_day = string.format("[[%s]]", os.date("%Y-%m-%d", prev_ts))
+  local next_day = string.format("[[%s]]", os.date("%Y-%m-%d", next_ts))
+
   -- Replace variables
   local content = template_content
     :gsub("{{date}}", date)
     :gsub("{{quote}}", quote)
     :gsub("{{author}}", author)
+    :gsub("{{task_date}}", task_date)
+    :gsub("{{weekly_note}}", weekly_note)
+    :gsub("{{previous_day}}", previous_day)
+    :gsub("{{next_day}}", next_day)
 
   -- Create directory if needed
   vim.fn.mkdir(vault .. "/daily", "p")
