@@ -578,7 +578,7 @@ return {
           { width = icon_width },
           { width = 8 },   -- relative (today/+1d/time) - COLUMN 1
           { width = 16 },  -- datetime - COLUMN 2
-          { width = 30 },  -- location
+          { width = 50 },  -- location (aligned on /) - COLUMN 3
           { remaining = true },  -- task text
         },
       })
@@ -715,6 +715,33 @@ return {
         })
       end
 
+      -- Calculate alignment for file paths (align on last /)
+      local max_dir_length = 0
+      for _, entry in ipairs(entries) do
+        if not entry.is_separator then
+          local path = entry.location:match("^(.*):%d+$") or entry.location
+          local last_slash_pos = path:match("^.*()/"  ) or 0
+          if last_slash_pos > max_dir_length then
+            max_dir_length = last_slash_pos
+          end
+        end
+      end
+
+      -- Add aligned location to each entry
+      for _, entry in ipairs(entries) do
+        if not entry.is_separator then
+          local path = entry.location:match("^(.*):%d+$") or entry.location
+          local line_num = entry.location:match(":(%d+)$") or ""
+          local last_slash_pos = path:match("^.*()/" ) or 0
+          local dir_part = last_slash_pos > 0 and path:sub(1, last_slash_pos - 1) or ""
+          local file_part = last_slash_pos > 0 and path:sub(last_slash_pos) or path
+
+          -- Right-align directory part
+          local padding = max_dir_length - last_slash_pos
+          entry.aligned_location = string.rep(" ", padding) .. dir_part .. file_part .. ":" .. line_num
+        end
+      end
+
       -- Find the closest task to do (first task with timestamp >= now)
       local cursor_position = 1
       for i, entry in ipairs(entries) do
@@ -765,7 +792,7 @@ return {
                 { display_icon, display_icon_hl },
                 { item.relative_text, display_relative_hl },  -- COLUMN 1: relative
                 { string.format("%16s", item.datetime_label), display_date_hl },     -- COLUMN 2: datetime (right-aligned)
-                { item.location, "Comment" },
+                { item.aligned_location or item.location, "Comment" },  -- COLUMN 3: file path (aligned on /)
                 { item.task_text, display_text_hl },
               })
             end,
