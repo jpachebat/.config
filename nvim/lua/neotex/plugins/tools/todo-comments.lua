@@ -767,6 +767,10 @@ return {
         sorter = conf.generic_sorter(user_opts),
         previewer = conf.grep_previewer(user_opts),
         default_selection_index = cursor_position,  -- Position cursor on closest task to do
+        layout_strategy = "horizontal",
+        layout_config = {
+          preview_width = 0.25,  -- Preview takes 25% of width (list gets 75%)
+        },
         attach_mappings = function(prompt_bufnr)
           actions.select_default:replace(function()
             local selection = action_state.get_selected_entry()
