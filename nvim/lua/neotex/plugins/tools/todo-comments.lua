@@ -867,6 +867,12 @@ return {
               return
             end
 
+            -- Save current buffer if modified
+            local current_buf = vim.api.nvim_get_current_buf()
+            if vim.bo[current_buf].modified then
+              vim.cmd("silent write")
+            end
+
             -- Open file in background
             local bufnr = vim.fn.bufadd(selection.filename)
             vim.fn.bufload(bufnr)
