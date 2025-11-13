@@ -270,12 +270,50 @@ function M.close()
   end
 end
 
+---Prompt user to select a project file with Telescope
+function M.prompt_select_file()
+  local ok, telescope = pcall(require, "telescope.builtin")
+  if not ok then
+    vim.notify("Telescope not available", vim.log.levels.ERROR)
+    return
+  end
+
+  -- Find markdown files
+  telescope.find_files({
+    prompt_title = "Select Project Todo File",
+    cwd = vim.fn.expand("~"),
+    find_command = { "rg", "--files", "--type", "md" },
+    attach_mappings = function(prompt_bufnr, map)
+      local actions = require("telescope.actions")
+      local action_state = require("telescope.actions.state")
+
+      -- Override default select action
+      actions.select_default:replace(function()
+        local selection = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+
+        if selection then
+          local filepath = selection.path or selection[1]
+          M.set_file(filepath)
+          -- Open popup with selected file
+          vim.schedule(function()
+            M.open()
+          end)
+        end
+      end)
+
+      return true
+    end,
+  })
+end
+
 ---Open the popup window
 function M.open()
   -- Get configured project file
   local project_file = vim.g.todo_project_file
   if not project_file or project_file == "" then
-    vim.notify("No project file configured. Set vim.g.todo_project_file", vim.log.levels.WARN)
+    -- No file configured, prompt user to select one
+    M.prompt_select_file()
     return
   end
 
