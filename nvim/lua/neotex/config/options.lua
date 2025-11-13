@@ -173,15 +173,6 @@ function M.setup()
   -- See: lua/neotex/plugins/tools/osc52.lua
   -- The plugin provides better SSH clipboard integration
 
-  -- Enable scroll padding for centered cursor at file boundaries
-  vim.defer_fn(function()
-    local ok, scroll_padding = pcall(require, "neotex.util.scroll-padding")
-    if ok then
-      scroll_padding.setup()
-      scroll_padding.enabled = true
-    end
-  end, 100)
-
   return true
 end
 
