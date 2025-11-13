@@ -281,7 +281,7 @@ function M.prompt_select_file()
   -- Find markdown files
   telescope.find_files({
     prompt_title = "Select Project Todo File",
-    cwd = vim.fn.expand("~"),
+    cwd = vim.fn.expand("~/work/notes"),
     find_command = { "rg", "--files", "--type", "md" },
     attach_mappings = function(prompt_bufnr, map)
       local actions = require("telescope.actions")
