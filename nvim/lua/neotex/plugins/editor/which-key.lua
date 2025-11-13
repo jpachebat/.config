@@ -234,7 +234,7 @@ return {
       { "<leader>k", "<cmd>close<CR>", desc = "kill split" },
       { "<leader>o", function()
         -- Try LSP document symbols first, fallback to treesitter
-        local has_lsp = #vim.lsp.get_active_clients({ bufnr = 0 }) > 0
+        local has_lsp = #vim.lsp.get_clients({ bufnr = 0 }) > 0
         if has_lsp then
           require('telescope.builtin').lsp_document_symbols()
         else
