@@ -19,14 +19,9 @@ local PADDING_LINES = 30
 function M.add_padding(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
 
-  -- Check if buffer is valid
-  if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-    return
-  end
-
   -- Skip if buffer is not normal or modifiable
-  local ok, buftype = pcall(vim.api.nvim_buf_get_option, bufnr, "buftype")
-  if not ok or (buftype ~= "" and buftype ~= "acwrite") then
+  local buftype = vim.bo[bufnr].buftype
+  if buftype ~= "" and buftype ~= "acwrite" then
     return
   end
 
@@ -59,13 +54,7 @@ end
 ---@param bufnr number Buffer number
 function M.remove_padding(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
-
-  -- Check if buffer is valid
-  if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-    return
-  end
-
-  pcall(vim.api.nvim_buf_clear_namespace, bufnr, ns_id, 0, -1)
+  vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
 end
 
 ---Setup autocmds to add padding to buffers
@@ -76,11 +65,8 @@ function M.setup()
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
     group = group,
     callback = function(args)
-      if not args.buf or not vim.api.nvim_buf_is_valid(args.buf) then
-        return
-      end
       vim.defer_fn(function()
-        pcall(M.add_padding, args.buf)
+        M.add_padding(args.buf)
       end, 50)
     end,
   })
@@ -89,17 +75,14 @@ function M.setup()
   vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
     group = group,
     callback = function(args)
-      if not args.buf or not vim.api.nvim_buf_is_valid(args.buf) then
-        return
-      end
       vim.defer_fn(function()
-        pcall(M.add_padding, args.buf)
+        M.add_padding(args.buf)
       end, 100)
     end,
   })
 
   -- Add padding to current buffer immediately
-  pcall(M.add_padding, vim.api.nvim_get_current_buf())
+  M.add_padding(vim.api.nvim_get_current_buf())
 end
 
 ---Toggle padding on/off
