@@ -414,6 +414,12 @@ function M.setup()
   end, {
     desc = "Show current project todo file path",
   })
+
+  vim.api.nvim_create_user_command("TodoSelectFile", function()
+    M.prompt_select_file()
+  end, {
+    desc = "Select project todo file with fuzzy finder",
+  })
 end
 
 -- Auto-setup when module is loaded

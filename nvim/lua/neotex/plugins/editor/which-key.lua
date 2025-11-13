@@ -725,7 +725,7 @@ return {
       { "<leader>to", function() require("neotex.util.todo-popup").toggle() end, desc = "todo popup (project)" },
       { "<leader>tp", function() require("todo-comments").jump_prev() end, desc = "previous todo" },
       { "<leader>tq", "<cmd>TodoQuickFix<CR>", desc = "todo quickfix" },
-      { "<leader>tf", "<cmd>TodoSetFile ", desc = "set todo file (project)" },
+      { "<leader>tf", "<cmd>TodoSelectFile<CR>", desc = "change todo file (fuzzy find)" },
       { "<leader>ts", function() require("neotex.util.todo-split").open_todo_split() end, desc = "todo section split" },
       { "<leader>tt", "<cmd>TodoTelescope<CR>", desc = "todo telescope (all)" },
       { "<leader>tx", "<cmd>CompletedTasksTelescope<CR>", desc = "completed tasks" },
