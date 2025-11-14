@@ -47,7 +47,7 @@ function M.setup()
     showmode = false,               -- we don't need to see things like -- INSERT -- anymore
     splitbelow = true,              -- force all horizontal splits to go below current window
     splitright = true,              -- force all vertical splits to go to the right of current window
-    scrolloff = 7,                  -- minimal number of screen lines to keep above and below the cursor
+    scrolloff = 12,                 -- minimal number of screen lines to keep above and below the cursor
     sidescrolloff = 7,              -- minimal number of screen columns either side of cursor if wrap is `false`
     shortmess = "filnxtToOFcI",     -- which errors to suppress (I suppresses intro message)
     mousemoveevent = true,
@@ -172,6 +172,14 @@ function M.setup()
   -- OSC 52 clipboard support is now handled by nvim-osc52 plugin
   -- See: lua/neotex/plugins/tools/osc52.lua
   -- The plugin provides better SSH clipboard integration
+
+  -- Enable scroll padding
+  vim.defer_fn(function()
+    local ok, scroll_padding = pcall(require, "neotex.util.scroll-padding")
+    if ok then
+      scroll_padding.setup()
+    end
+  end, 100)
 
   return true
 end
