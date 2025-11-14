@@ -20,22 +20,26 @@ function M.add_padding(bufnr)
 
   local line_count = vim.api.nvim_buf_line_count(bufnr)
 
-  -- Top padding
+  -- Top padding - single extmark with multiple virtual lines
+  local top_virt_lines = {}
   for _ = 1, PADDING_LINES do
-    vim.api.nvim_buf_set_extmark(bufnr, ns_id, 0, 0, {
-      virt_lines = { { { "", "Normal" } } },
-      virt_lines_above = true,
-    })
+    table.insert(top_virt_lines, { { "", "Normal" } })
   end
+  vim.api.nvim_buf_set_extmark(bufnr, ns_id, 0, 0, {
+    virt_lines = top_virt_lines,
+    virt_lines_above = true,
+  })
 
-  -- Bottom padding
+  -- Bottom padding - single extmark with multiple virtual lines
   if line_count > 0 then
+    local bottom_virt_lines = {}
     for _ = 1, PADDING_LINES do
-      vim.api.nvim_buf_set_extmark(bufnr, ns_id, line_count - 1, 0, {
-        virt_lines = { { { "", "Normal" } } },
-        virt_lines_above = false,
-      })
+      table.insert(bottom_virt_lines, { { "", "Normal" } })
     end
+    vim.api.nvim_buf_set_extmark(bufnr, ns_id, line_count - 1, 0, {
+      virt_lines = bottom_virt_lines,
+      virt_lines_above = false,
+    })
   end
 end
 
