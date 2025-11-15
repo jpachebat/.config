@@ -154,11 +154,7 @@ return {
       skip_heading = false,
     },
     latex = {
-      enabled = true,
-      converter = 'none',  -- Changed from latex2text to none (just highlights, no conversion)
-      highlight = 'RenderMarkdownMath',
-      top_pad = 0,
-      bottom_pad = 0,
+      enabled = false,  -- Disabled - render-markdown has limited LaTeX support
     },
     html = {
       enabled = true,

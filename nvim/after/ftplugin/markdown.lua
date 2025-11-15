@@ -48,6 +48,14 @@ vim.opt_local.display:append("lastline")  -- Show as much of last line as possib
 vim.opt_local.conceallevel = 2
 vim.opt_local.concealcursor = ""   -- Always conceal, even when cursor is on line
 
+-- LaTeX math syntax highlighting
+vim.cmd([[
+  syntax match markdownMath "\$\$.\{-}\$\$" contains=@texMathZoneGroup
+  syntax match markdownMathInline "\$[^$].\{-}\$" contains=@texMathZoneGroup
+  hi def link markdownMath Special
+  hi def link markdownMathInline Special
+]])
+
 -- Apply custom markdown comment and task highlighting
 local function apply_highlighting()
   -- Define muted color for comments (Gruvbox gray)
