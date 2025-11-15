@@ -155,6 +155,16 @@ return {
       highlight = 'RenderMarkdownMath',
       top_pad = 0,
       bottom_pad = 0,
+      -- Explicitly enable inline math with $ delimiters
+      inline = {
+        enabled = true,
+        highlight = 'RenderMarkdownMath',
+      },
+      -- Explicitly enable block math with $$ delimiters
+      block = {
+        enabled = true,
+        highlight = 'RenderMarkdownMath',
+      },
     },
     html = {
       enabled = true,
