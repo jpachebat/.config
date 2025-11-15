@@ -48,13 +48,23 @@ vim.opt_local.display:append("lastline")  -- Show as much of last line as possib
 vim.opt_local.conceallevel = 2
 vim.opt_local.concealcursor = ""   -- Always conceal, even when cursor is on line
 
--- LaTeX math syntax highlighting
+-- LaTeX math syntax with VimTeX-style concealment
+-- Load TeX syntax for concealment rules
+vim.cmd('runtime! syntax/tex.vim')
+
 vim.cmd([[
-  syntax match markdownMath "\$\$.\{-}\$\$" contains=@texMathZoneGroup
-  syntax match markdownMathInline "\$[^$].\{-}\$" contains=@texMathZoneGroup
-  hi def link markdownMath Special
+  " Define math zones that use TeX concealment
+  syntax region markdownMathBlock start="\$\$" end="\$\$" contains=@texMathZoneGroup,texStatement,texMathSymbol,texMathOper concealends keepend
+  syntax region markdownMathInline start="\$" end="\$" contains=@texMathZoneGroup,texStatement,texMathSymbol,texMathOper concealends keepend oneline
+
+  hi def link markdownMathBlock Special
   hi def link markdownMathInline Special
 ]])
+
+-- Enable VimTeX-style concealment for math
+vim.g.tex_conceal = 'abdmg'  -- conceal: accents, bold/italic, delimiters, math, Greek
+vim.g.tex_superscripts = '[0-9a-zA-W.,:;+-<>/()=]'
+vim.g.tex_subscripts = '[0-9aehijklmnoprstuvx,+-/().]'
 
 -- Apply custom markdown comment and task highlighting
 local function apply_highlighting()
