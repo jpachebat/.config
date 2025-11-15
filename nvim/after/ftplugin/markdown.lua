@@ -49,22 +49,32 @@ vim.opt_local.conceallevel = 2
 vim.opt_local.concealcursor = ""   -- Always conceal, even when cursor is on line
 
 -- LaTeX math syntax with VimTeX-style concealment
--- Load TeX syntax for concealment rules
-vim.cmd('runtime! syntax/tex.vim')
-
-vim.cmd([[
-  " Define math zones that use TeX concealment
-  syntax region markdownMathBlock start="\$\$" end="\$\$" contains=@texMathZoneGroup,texStatement,texMathSymbol,texMathOper concealends keepend
-  syntax region markdownMathInline start="\$" end="\$" contains=@texMathZoneGroup,texStatement,texMathSymbol,texMathOper concealends keepend oneline
-
-  hi def link markdownMathBlock Special
-  hi def link markdownMathInline Special
-]])
-
--- Enable VimTeX-style concealment for math
+-- Enable VimTeX-style concealment settings first
 vim.g.tex_conceal = 'abdmg'  -- conceal: accents, bold/italic, delimiters, math, Greek
 vim.g.tex_superscripts = '[0-9a-zA-W.,:;+-<>/()=]'
 vim.g.tex_subscripts = '[0-9aehijklmnoprstuvx,+-/().]'
+
+-- Load TeX syntax for concealment rules
+vim.cmd('runtime! syntax/tex.vim')
+
+-- Define math zones with high priority to override markdown defaults
+vim.cmd([[
+  " Clear any conflicting syntax
+  syntax clear markdownMath
+  syntax clear markdownMathInline
+
+  " Block math $$...$$
+  syntax region texMathZoneBlock start="\$\$" end="\$\$" keepend contains=@Spell,@texMathZoneGroup
+
+  " Inline math $...$  (exclude $$ to avoid conflict)
+  syntax region texMathZoneInline matchgroup=Delimiter start="\$" end="\$" skip="\\\$" keepend oneline contains=@Spell,@texMathZoneGroup
+
+  hi def link texMathZoneBlock Special
+  hi def link texMathZoneInline Special
+]])
+
+-- Force syntax reload
+vim.cmd('syntax sync fromstart')
 
 -- Apply custom markdown comment and task highlighting
 local function apply_highlighting()
