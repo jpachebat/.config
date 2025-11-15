@@ -257,12 +257,16 @@ return {
           show_on_accept_on_trigger_character = true,
           show_on_insert_on_trigger_character = true,
           show_on_x_blocked_trigger_characters = { "'", '"', '(' },
-          -- Trigger for Obsidian wiki-links [[
-          additional_trigger_characters = { '[', '#' }, -- [ for [[links]], # for #tags
         },
         menu = {
           max_height = 15,
-          auto_show = true,
+          auto_show = function(ctx)
+            -- Disable auto-show for markdown files
+            if vim.bo.filetype == 'markdown' then
+              return false
+            end
+            return true
+          end,
           draw = {
             treesitter = { "lsp" },
             columns = {
