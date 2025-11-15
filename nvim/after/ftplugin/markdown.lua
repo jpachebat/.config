@@ -48,32 +48,31 @@ vim.opt_local.display:append("lastline")  -- Show as much of last line as possib
 vim.opt_local.conceallevel = 2
 vim.opt_local.concealcursor = ""   -- Always conceal, even when cursor is on line
 
--- LaTeX math syntax with VimTeX-style concealment
--- Enable VimTeX-style concealment settings first
-vim.g.tex_conceal = 'abdmg'  -- conceal: accents, bold/italic, delimiters, math, Greek
+-- LaTeX math concealment in markdown
+-- Set concealment options for math
+vim.g.tex_conceal = 'abdmg'
 vim.g.tex_superscripts = '[0-9a-zA-W.,:;+-<>/()=]'
 vim.g.tex_subscripts = '[0-9aehijklmnoprstuvx,+-/().]'
 
--- Load TeX syntax for concealment rules
-vim.cmd('runtime! syntax/tex.vim')
-
--- Define math zones with high priority to override markdown defaults
+-- Include TeX syntax groups for concealment WITHOUT replacing markdown syntax
 vim.cmd([[
-  " Clear any conflicting syntax
-  syntax clear markdownMath
-  syntax clear markdownMathInline
+  " Include TeX concealment syntax groups (not full tex.vim)
+  runtime! syntax/shared/tex-conceal.vim
+
+  " Define math zones that include TeX concealment
+  syntax cluster texMathZoneGroup contains=texMathSymbol,texGreek,texSuperscript,texSubscript,texMathOper
 
   " Block math $$...$$
-  syntax region texMathZoneBlock start="\$\$" end="\$\$" keepend contains=@Spell,@texMathZoneGroup
+  syntax region texMathZoneBlock start="\$\$" end="\$\$" keepend contains=@texMathZoneGroup
 
-  " Inline math $...$  (exclude $$ to avoid conflict)
-  syntax region texMathZoneInline matchgroup=Delimiter start="\$" end="\$" skip="\\\$" keepend oneline contains=@Spell,@texMathZoneGroup
+  " Inline math $...$ (not $$)
+  syntax region texMathZoneInline start="\$" end="\$" skip="\\\$" keepend oneline contains=@texMathZoneGroup
 
   hi def link texMathZoneBlock Special
   hi def link texMathZoneInline Special
 ]])
 
--- Force syntax reload
+-- Ensure markdown syntax is still loaded (render-markdown handles this)
 vim.cmd('syntax sync fromstart')
 
 -- Apply custom markdown comment and task highlighting
