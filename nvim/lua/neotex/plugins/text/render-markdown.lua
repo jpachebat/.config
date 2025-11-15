@@ -2,8 +2,12 @@ return {
   'MeanderingProgrammer/render-markdown.nvim',
   event = "BufRead",
   ft = { "markdown" },
+  dependencies = {
+    'nvim-treesitter/nvim-treesitter',  -- Required for math detection
+  },
   opts = {
     file_types = { "markdown" },
+    latex_enabled = true,  -- Enable LaTeX support
     render = {
       max_file_size = 10.0,
       debounce = 100,
@@ -151,20 +155,10 @@ return {
     },
     latex = {
       enabled = true,
-      converter = 'latex2text',
+      converter = 'none',  -- Changed from latex2text to none (just highlights, no conversion)
       highlight = 'RenderMarkdownMath',
       top_pad = 0,
       bottom_pad = 0,
-      -- Explicitly enable inline math with $ delimiters
-      inline = {
-        enabled = true,
-        highlight = 'RenderMarkdownMath',
-      },
-      -- Explicitly enable block math with $$ delimiters
-      block = {
-        enabled = true,
-        highlight = 'RenderMarkdownMath',
-      },
     },
     html = {
       enabled = true,
