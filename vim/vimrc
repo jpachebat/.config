@@ -1,0 +1,28 @@
+set number             " Show line numbers
+set relativenumber     " Relative numbers
+syntax on              " Enable syntax highlighting
+
+" Indentation
+set tabstop=2          " Number of spaces that a <Tab> counts for
+set shiftwidth=2       " Number of spaces to use for each step of (auto)indent
+set expandtab          " Use spaces instead of tabs
+set autoindent         " Auto indent new lines
+
+" Search
+set ignorecase         " Case insensitive search
+set smartcase          " Case sensitive if uppercase present
+set incsearch          " Incremental search
+set hlsearch           " Highlight search results
+
+" UI/UX
+set scrolloff=7        " Keep 7 lines above/below cursor
+set cursorline         " Highlight current line
+set mouse=a            " Enable mouse support
+set backspace=indent,eol,start  " Better backspace behavior
+
+" Splits
+set splitbelow         " Open horizontal splits below
+set splitright         " Open vertical splits to the right
+
+" Clipboard (might not work on all remote setups)
+set clipboard=unnamed
