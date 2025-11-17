@@ -1,21 +1,23 @@
+# Cluster-specific configuration
+# Symlink: ln -sf ~/.config/bash/bashrc.cluster ~/.bashrc
+
 # Environment Variables
 export XDG_CACHE_HOME=$WORK/.cache
 export PATH=$WORK/nvim-local/bin:$PATH
 
+# Load common shell configuration
+if [ -f ~/.config/shell/common.sh ]; then
+  source ~/.config/shell/common.sh
+fi
+
 # Secrets - source from private file (not in git)
 [ -f ~/.bash_private ] && source ~/.bash_private
-
-# Vi mode
-set -o vi
 
 # Start in work directory
 cd $WORK
 
-# Directory Navigation
+# Cluster-specific aliases
 alias rect='cd $WORK/rect_flows'
-
-# Git
-alias gp='git pull'
 
 # SLURM
 alias sq='squeue | grep ugu11'
