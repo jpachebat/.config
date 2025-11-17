@@ -37,16 +37,26 @@
 --   end
 -- }
 
--- SIMPLE VIM-LIKE COLORSCHEME
+-- SIMPLE CLASSIC THEMES
 return {
   "rebelot/kanagawa.nvim",
   priority = 1000,
   config = function()
-    -- Use default vim colors for light mode, kanagawa for dark
     if vim.o.background == "light" then
-      vim.cmd("colorscheme shine")  -- Built-in vim-like light theme
+      vim.cmd("colorscheme shine")  -- Built-in vim light theme
     else
-      require('kanagawa').setup({
+      vim.cmd("colorscheme slate")  -- Built-in classic dark theme
+    end
+    require("neotex.util.theme").setup()
+  end,
+}
+
+-- KANAGAWA (complex, disabled)
+--[[ return {
+  "rebelot/kanagawa.nvim",
+  priority = 1000,
+  config = function()
+    require('kanagawa').setup({
       compile = false,  -- enable compiling the colorscheme
       undercurl = true, -- enable undercurls
       commentStyle = { italic = true },
@@ -281,11 +291,11 @@ return {
         light = "lotus"
       },
     })
-      vim.cmd("colorscheme kanagawa")
-    end
+    vim.cmd("colorscheme kanagawa")
     require("neotex.util.theme").setup()
   end,
 }
+--]]
 
 
 

@@ -3,17 +3,37 @@ local M = {}
 M.preset = {
   pick = nil,
   keys = {
-    { icon = " ", key = "s", desc = "Restore Session", action = ":SessionManager load_session" },
-    { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
-    { icon = " ", key = "e", desc = "Explorer", action = ":Neotree toggle" },
-    { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-    { icon = "󰱼 ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-    { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-    { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
-    { icon = " ", key = "i", desc = "Info", action = ":e ~/.config/nvim/docs/MAPPINGS.md" },
-    { icon = " ", key = "m", desc = "Manage Plugins", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
-    { icon = " ", key = "h", desc = "Checkhealth", action = ":checkhealth" },
-    { icon = " ", key = "q", desc = "Quit", action = ":qa!" },
+    { icon = "", key = "s", desc = "Restore Session", action = ":SessionManager load_session" },
+    { icon = "", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+    { icon = "", key = "e", desc = "Explorer", action = ":Neotree toggle" },
+    { icon = "", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+    { icon = "", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+    { icon = "", key = "n", desc = "New File", action = ":ene | startinsert" },
+    { icon = "", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+    {
+      icon = "",
+      key = "d",
+      desc = "Daily Note",
+      action = function()
+        -- Load Obsidian plugin if not loaded
+        local ok_lazy, lazy = pcall(require, "lazy")
+        if ok_lazy then
+          lazy.load({ plugins = { "obsidian.nvim" } })
+        end
+        vim.cmd("ObsidianToday")
+      end
+    },
+    { icon = "", key = "w", desc = "Weekly Note", action = ":lua require('neotex.obsidian.weekly-commands').open_this_week()" },
+    { icon = "", key = "i", desc = "Info", action = ":e ~/.config/nvim/docs/MAPPINGS.md" },
+    { icon = "", key = "l", desc = "Manage Plugins", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+    {
+      icon = "",
+      key = "M",
+      desc = "Mount Cholesky",
+      action = ":terminal source ~/.bash_profile && umount-cholesky 2>/dev/null ; mount-cholesky && echo '' && echo 'Mounted! Press Enter to continue' && read"
+    },
+    { icon = "", key = "h", desc = "Checkhealth", action = ":checkhealth" },
+    { icon = "", key = "q", desc = "Quit", action = ":qa!" },
   },
   header = [[
      neovim

@@ -26,3 +26,8 @@ set splitright         " Open vertical splits to the right
 
 " Clipboard (might not work on all remote setups)
 set clipboard=unnamed
+
+" Color adjustments
+" Make docstrings same color as comments
+highlight link pythonDocstring Comment
+highlight link pythonString Comment
