@@ -42,12 +42,12 @@ function M.setup()
     -- colorcolumn = "100",             -- highlight vertical colorcolumn (moved to after/python.lua)
     wrap = true,                    -- display lines as one long line
     showbreak = "  ",               -- set indent of wrapped lines
-    cmdheight = 1,                  -- space in the neovim command line for displaying messages
+    cmdheight = 0,                  -- space in the neovim command line for displaying messages
     pumheight = 7,                  -- pop up menu height
     showmode = false,               -- we don't need to see things like -- INSERT -- anymore
     splitbelow = true,              -- force all horizontal splits to go below current window
     splitright = true,              -- force all vertical splits to go to the right of current window
-    scrolloff = 12,                 -- minimal number of screen lines to keep above and below the cursor
+    scrolloff = 7,                  -- minimal number of screen lines to keep above and below the cursor
     sidescrolloff = 7,              -- minimal number of screen columns either side of cursor if wrap is `false`
     shortmess = "filnxtToOFcI",     -- which errors to suppress (I suppresses intro message)
     mousemoveevent = true,

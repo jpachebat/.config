@@ -2,7 +2,7 @@
 
 local M = {}
 local ns_id = vim.api.nvim_create_namespace("scroll_padding")
-local PADDING_LINES = 15  -- Virtual lines at top and bottom
+local PADDING_LINES = 7  -- Virtual lines at top and bottom
 
 function M.add_padding(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
@@ -46,31 +46,32 @@ end
 function M.setup()
   local group = vim.api.nvim_create_augroup("ScrollPadding", { clear = true })
 
-  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinScrolled", "VimResized" }, {
     group = group,
     callback = function(args)
-      if not args.buf or not vim.api.nvim_buf_is_valid(args.buf) then
+      local bufnr = args.buf or vim.api.nvim_get_current_buf()
+      if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
         return
       end
-      vim.defer_fn(function()
-        pcall(M.add_padding, args.buf)
-      end, 50)
+      pcall(M.add_padding, bufnr)
     end,
   })
 
   vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
     group = group,
     callback = function(args)
-      if not args.buf or not vim.api.nvim_buf_is_valid(args.buf) then
+      local bufnr = args.buf or vim.api.nvim_get_current_buf()
+      if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
         return
       end
-      vim.defer_fn(function()
-        pcall(M.add_padding, args.buf)
-      end, 100)
+      pcall(M.add_padding, bufnr)
     end,
   })
 
-  pcall(M.add_padding, vim.api.nvim_get_current_buf())
+  -- Initial padding
+  vim.schedule(function()
+    pcall(M.add_padding, vim.api.nvim_get_current_buf())
+  end)
 end
 
 return M

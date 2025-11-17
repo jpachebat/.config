@@ -3,11 +3,16 @@ return {
   event = "BufReadPost", -- Only load when an actual file is read
   dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()
+    local custom_gruvbox = require('lualine.themes.gruvbox')
+
+    -- Dim the text colors for dark mode
+    custom_gruvbox.normal.c.fg = '#928374'  -- dimmer fg
+    custom_gruvbox.inactive.c.fg = '#665c54'
 
     require('lualine').setup({
       options = {
         icons_enabled = false,
-        theme = 'gruvbox',
+        theme = custom_gruvbox,
         component_separators = '',
         section_separators = '',
         disabled_filetypes = {
@@ -34,14 +39,16 @@ return {
         }
       },
       sections = {
-        lualine_a = { 'mode' },
+        lualine_a = {},
         lualine_b = {},
-        lualine_c = {
-          'filename',
-        },
-        lualine_x = { 'diagnostics' },
+        lualine_c = { 'filename' },
+        lualine_x = {},
         lualine_y = {},
-        lualine_z = { 'progress', 'location' }
+        lualine_z = {
+          function()
+            return string.format('%d/%d', vim.fn.line('.'), vim.fn.line('$'))
+          end
+        }
       },
       inactive_sections = {
         lualine_a = {},

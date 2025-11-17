@@ -357,6 +357,7 @@ function M.setup()
   -- Search and file finding
   map("n", "<CR>", "<cmd>noh<CR>", {}, "Clear search highlights")
   map("n", "<C-p>", "<cmd>Telescope find_files<CR>", { remap = true }, "Find files")
+  map("n", "<leader>D", function() telescope_drive_docs() end, {}, "Find in Google Drive")
 
   -- Code commenting with mini.comment plugin
   map("n", "<C-;>", function()

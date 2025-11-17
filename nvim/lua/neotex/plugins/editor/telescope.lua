@@ -22,6 +22,16 @@ return {
     telescope.setup({
       defaults = {
         path_display = { "truncate " },
+        vimgrep_arguments = {
+          'rg',
+          '--no-ignore',
+          '--color=never',
+          '--no-heading',
+          '--with-filename',
+          '--line-number',
+          '--column',
+          '--smart-case'
+        },
         mappings = {
           i = {
             ["<C-j>"] = actions.move_selection_next,
@@ -31,6 +41,7 @@ return {
             ["<Down>"] = actions.move_selection_next,
             ["<Up>"] = actions.move_selection_previous,
             ["<CR>"] = actions.select_default,
+            ["<C-h>"] = actions.select_horizontal,
             ["<C-u>"] = actions.preview_scrolling_up,
             ["<C-d>"] = actions.preview_scrolling_down,
             ["<PageUp>"] = actions.results_scrolling_up,
@@ -43,6 +54,7 @@ return {
           n = {
             ["<esc>"] = actions.close,
             ["<CR>"] = actions.select_default,
+            ["<C-h>"] = actions.select_horizontal,
             ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
             ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
             ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
@@ -61,6 +73,12 @@ return {
             ["<PageDown>"] = actions.results_scrolling_down,
             ["?"] = actions.which_key,
           },
+        },
+      },
+      pickers = {
+        find_files = {
+          hidden = true,
+          no_ignore = true,
         },
       },
       extensions = {
@@ -159,7 +177,30 @@ return {
     telescope.load_extension("bibtex")
     telescope.load_extension("ui-select")
     telescope.load_extension("file_browser")
-    
+
+    -- Custom picker: Google Drive docs with system open
+    local builtin = require('telescope.builtin')
+    local actions = require('telescope.actions')
+    local action_state = require('telescope.actions.state')
+
+    _G.telescope_drive_docs = function()
+      builtin.find_files({
+        prompt_title = 'Google Drive Docs',
+        cwd = vim.fn.expand('~/My Drive/'),
+        hidden = true,
+        attach_mappings = function(prompt_bufnr, map)
+          actions.select_default:replace(function()
+            local selection = action_state.get_selected_entry()
+            actions.close(prompt_bufnr)
+            if selection then
+              vim.fn.jobstart({'open', selection.path}, {detach = true})
+            end
+          end)
+          return true
+        end,
+      })
+    end
+
     -- Override vim.ui.select for confirmations to use smaller cursor theme
     local original_select = vim.ui.select
     vim.ui.select = function(items, opts, on_choice)
