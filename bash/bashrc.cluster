@@ -20,8 +20,8 @@ alias gp='git pull'
 # SLURM
 alias sq='squeue | grep ugu11'
 alias sb='sbatch main.sh'
-alias sj='sacct -u $USER --format=JobID,JobName%20,State,Start,End,Elapsed -X -S today'
-alias sjw='watch -n 1 "sacct -u $USER --format=JobID,JobName%20,State,Start,End,Elapsed -X -S today"'
+alias sj='sacct -u $USER --format=JobID,JobName%20,State,Start,End,Elapsed -X -S today -r'
+alias sjw='watch -n 1 "sacct -u $USER --format=JobID,JobName%20,State,Start,End,Elapsed -X -S today -r"'
 
 # WandB
 alias wandb_sync='~/.local/bin/wandb sync $WORK/wandb/wandb/offline-run-*'
