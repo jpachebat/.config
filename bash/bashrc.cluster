@@ -25,4 +25,6 @@ alias sb='sbatch main.sh'
 alias wandb_sync='~/.local/bin/wandb sync $WORK/wandb/wandb/offline-run-*'
 
 # GPU Monitoring (formatted)
-alias gpustat='watch -n 1 '\''nvidia-smi --query-gpu=index,name,memory.used,memory.total,utilization.gpu,temperature.gpu --format=csv,noheader,nounits | awk -F"," '\''BEGIN {printf "%-3s  %-22s  %8s  %8s  %6s  %5s\n", "ID","NAME","MEM_USED","MEM_TOT","UTIL","TEMP"; print "---------------------------------------------------------------";} {printf "%-3s  %-22s  %8s  %8s  %6s  %5s\n", $1, $2, $3"MiB", $4"MiB", $5"%", $6"°C";}'\''\'' '
+gpustat() {
+  watch -n 1 'nvidia-smi --query-gpu=index,name,memory.used,memory.total,utilization.gpu,temperature.gpu --format=csv,noheader,nounits | awk -F"," '"'"'BEGIN {printf "%-3s  %-22s  %8s  %8s  %6s  %5s\n", "ID","NAME","MEM_USED","MEM_TOT","UTIL","TEMP"; print "---------------------------------------------------------------";} {printf "%-3s  %-22s  %8s  %8s  %6s  %5s\n", $1, $2, $3"MiB", $4"MiB", $5"%", $6"°C";}'"'"''
+}
