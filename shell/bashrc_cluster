@@ -22,25 +22,3 @@ wqueue() {
         "
     fi
 }
-
-# Watch nvidia-smi on a GPU node
-#   wsmi         -> auto-pick first node where you have a job
-#   wsmi node    -> e.g. wsmi cholesky-gpu03
-wsmi() {
-    local node
-
-    if [ -n "$1" ]; then
-        node="$1"
-    else
-        # take first non-null node where you have a job
-        node=$(squeue -u "$USER" -o "%N" -h | grep -v "(null)" | head -n1)
-    fi
-
-    if [ -z "$node" ] || [ "$node" = "(null)" ]; then
-        echo "No running jobs found for $USER."
-        return 1
-    fi
-
-    echo "Connecting to $node..."
-    ssh -t "$node" 'watch -n 2 "nvidia-smi --query-gpu=index,name,memory.used,memory.total,utilization.gpu --format=csv,noheader,nounits"'
-}
