@@ -4,6 +4,8 @@ export VISUAL=nvim
 
 # PATH: generic, safe everywhere (Mac + Linux)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+# Project root directory
+export WORKDIR="/mnt/beegfs/workdir/jean.pachebat"
 
 # History + vi mode
 set -o vi

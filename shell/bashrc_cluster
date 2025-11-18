@@ -1,2 +1,23 @@
 # Cluster-specific config (e.g. modules, aliases) goes here.
 # Currently empty.
+wqueue() {
+    if [ "$1" = "all" ]; then
+        watch -n 3 "
+            echo '=== ALL GPU JOBS (cluster-wide) ===';
+            squeue -p gpu,gpu_v100,gpu_a100,gpu_a100_80g -o '%8i %10P %15u %5D %8T %12M %20R %20b';
+            echo '';
+            echo '=== YOUR JOBS (squeue) ===';
+            squeue -u \$USER;
+            echo '';
+            echo '=== TODAY HISTORY (sacct, newest first) ===';
+            sacct -u \$USER --starttime today -X --format=JobID,Start,State,Elapsed,NodeList | sort -k2 -r
+        "
+    else
+        watch -n 3 "
+            echo '=== ACTIVE (squeue) ===';
+            squeue -u \$USER;
+            echo '';
+            echo '=== TODAY HISTORY (sacct, newest first) ===';
+            sacct -u \$USER --starttime today -X --format=JobID,Start,State,Elapsed,NodeList | sort -k2 -r
+        "
+    fi
