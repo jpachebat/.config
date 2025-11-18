@@ -1,0 +1,25 @@
+# Shared config
+[ -f "$HOME/.config/shell/bashrc_common" ] && source "$HOME/.config/shell/bashrc_common"
+
+# OS / host specific
+case "$OSTYPE" in
+  darwin*)
+    # macOS
+    [ -f "$HOME/.config/shell/bashrc_mac" ] && source "$HOME/.config/shell/bashrc_mac"
+    ;;
+  linux*)
+    # Linux (clusters, servers, etc.)
+    host="$(hostname 2>/dev/null || echo "")"
+    case "$host" in
+      cholesky*|jeanzay*|jean-zay* )
+        [ -f "$HOME/.config/shell/bashrc_cluster" ] && source "$HOME/.config/shell/bashrc_cluster"
+        ;;
+      *)
+        # other linux machines: nothing special for now
+        ;;
+    esac
+    ;;
+esac
+
+# Optional local overrides (secrets, machine-specific)
+[ -f "$HOME/.config/shell/local.sh" ] && source "$HOME/.config/shell/local.sh"

@@ -1,0 +1,54 @@
+session_name: home
+start_directory: ~/proj/
+
+windows:
+
+  - name: dash
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - clear
+          - neofetch 2>/dev/null || uname -a
+      - shell_command:
+          - clear
+          - htop 2>/dev/null || top
+
+  - name: clusters
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - clear
+          - echo "[Cholesky]"
+          - ssh cholesky
+      - shell_command:
+          - clear
+          - echo "[Jean-Zay]"
+          - ssh jeanzay
+
+  - name: queue
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - clear
+          - watch -n 2 'squeue -u $USER' 2>/dev/null || bash
+      - shell_command:
+          - clear
+          - watch -n 2 'sacct -u $USER --format=JobID,JobName%30,Elapsed,State' 2>/dev/null || bash
+
+  - name: notes
+    layout: main-vertical
+    panes:
+      - shell_command:
+          - clear
+          - cd ~/docs/notes 2>/dev/null || cd ~
+          - nvim
+      - shell_command:
+                                         ame: mounts
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - clear
+          - mount | grep jeanzay || echo "No JZ mounts"
+      - shell_command:
+          - clear
+          - mount | grep c          - mount | grep c       ts"

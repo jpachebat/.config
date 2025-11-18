@@ -1,0 +1,49 @@
+# Mac-specific extras: sshfs mounts, diskutil, tmux helpers
+
+# Ensure mount points exist
+mkdir -p "$HOME/mounts/cholesky-home" "$HOME/mounts/cholesky-work" "$HOME/mounts/jeanzay-work"
+
+# Cholesky mounts
+alias mount-cholesky-home='sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,auto_cache,follow_symlinks jean.pachebat@cholesky:/mnt/beegfs/home/CMAP/jean.pachebat "$HOME/mounts/cholesky-home"'
+alias mount-cholesky-work='sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,auto_cache,follow_symlinks jean.pachebat@cholesky:/mnt/beegfs/workdir/jean.pachebat "$HOME/mounts/cholesky-work"'
+alias mount-cholesky='mount-cholesky-home && mount-cholesky-work'
+
+# Unmount Cholesky
+alias umount-cholesky-home='diskutil unmount force "$HOME/mounts/cholesky-home" 2>/dev/null || umount "$HOME/mounts/cholesky-home" 2>/dev/null'
+alias umount-cholesky-work='diskutil unmount force "$HOME/mounts/cholesky-work" 2>/dev/null || umount "$HOME/mounts/cholesky-work" 2>/dev/null'
+alias umount-cholesky='umount-cholesky-home; umount-cholesky-work'
+
+# Jeanzay mount
+alias mount-jeanzay-work='umount-jeanzay-work >/dev/null 2>&1; sshfs jeanzay:/lustre/fswork/projects/rech/nhf/ugu11rg/ "$HOME/mounts/jeanzay-work" -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3'
+alias umount-jeanzay-work='diskutil unmount force "$HOME/mounts/jeanzay-work" 2>/dev/null || umount "$HOME/mounts/jeanzay-work" 2>/dev/null'
+
+# Check mounts
+alias check-cholesky='mount | grep cholesky'
+
+# Reload global tmux session
+alias thome-reload='tmux kill-session -t home 2>/dev/null; thome'
+
+# Remount all cluster mounts quickly
+alias remount-all='umount-cholesky >/dev/null 2>&1; umount-jeanzay-work >/dev/null 2>&1; mount-cholesky; mount-jeanzay-work'
+
+# tmuxp helper:
+#  - tx           : load .tmuxp.yaml in current dir
+#  - tx <project> : cd ~/proj/<project> and load its .tmuxp.yaml
+tx() {
+    if [ -z "$1" ]; then
+        tmuxp load .tmuxp.yaml
+        return
+    fi
+
+    local proj_dir="$HOME/proj/$1"
+
+    if [ ! -d "$proj_dir" ]; then
+        echo "Project '$1' not found in ~/proj"
+        return 1
+    fi
+
+    (
+        cd "$proj_dir" || exit 1
+        tmuxp load .tmuxp.yaml
+    )
+}

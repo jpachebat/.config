@@ -1,0 +1,25 @@
+# ==== Basic environment ====
+export EDITOR=nvim
+export VISUAL=nvim
+
+# PATH: generic, safe everywhere (Mac + Linux)
+export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+# History + vi mode
+set -o vi
+
+# ==== Generic aliases ====
+alias ll='ls -lh'
+alias la='ls -lha'
+alias v='nvim'
+alias thome='tmuxp load ~/.config/tmuxp/global.yaml'
+
+# Git shortcuts
+alias gc='git add . && git commit'
+alias gp='git push'
+alias gpl='git pull'
+alias qpsh='git add . && git commit -m "quick push" && git push'
+
+# Cluster SSH (valid on Mac + remote)
+alias cho='ssh cholesky'
+alias jez='ssh jeanzay'
