@@ -55,5 +55,4 @@ feat: implement Phase 1 - Terminal Detection & Command Abstraction
 Automated implementation of phase 1 from terminal-compatibility-worktree plan.
 Added terminal-agnostic tab management for Kitty and WezTerm support.
 
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```

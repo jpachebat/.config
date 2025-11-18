@@ -247,42 +247,95 @@ function M.unindent_list_item()
   utils.close_completion_menu(1000)
 end
 
+-- Log completed task to task_log/ directory
+local function log_completed_task(task_line, current_line_num)
+  local log_dir = vim.fn.expand("~/work/notes/task_log")
+
+  -- Create directory if it doesn't exist
+  if vim.fn.isdirectory(log_dir) == 0 then
+    vim.fn.mkdir(log_dir, "p")
+  end
+
+  -- Use a single log file for now (can be expanded to per-project or per-date later)
+  local log_file = log_dir .. "/completed.md"
+
+  -- Get source file name
+  local source_file = vim.fn.expand("%:t")  -- Just filename
+  local source_path = vim.fn.expand("%:~:.")  -- Relative path from cwd
+
+  -- Extract task text (remove checkbox)
+  local task_text = task_line:gsub("^%s*[*%-]%s*%[.%]%s*", "")
+
+  -- Get description lines (indented lines following the task)
+  local description_lines = {}
+  local bufnr = vim.api.nvim_get_current_buf()
+  local total_lines = vim.api.nvim_buf_line_count(bufnr)
+
+  for i = current_line_num + 1, math.min(current_line_num + 20, total_lines) do
+    local next_line = vim.fn.getline(i)
+    -- Check if line is indented (part of task description)
+    if next_line:match("^%s+%S") and not next_line:match("^%s*[*%-]") then
+      table.insert(description_lines, next_line)
+    else
+      break  -- Stop at first non-indented line or new list item
+    end
+  end
+
+  -- Build log entry
+  local timestamp = os.date("%Y-%m-%d %H:%M")
+  local log_entry = {
+    "",
+    string.format("* [x] %s", task_text),
+    string.format("  - completed: %s", timestamp),
+    string.format("  - source: `%s`", source_path)
+  }
+
+  -- Add description if present
+  if #description_lines > 0 then
+    for _, desc_line in ipairs(description_lines) do
+      table.insert(log_entry, desc_line)
+    end
+  end
+
+  -- Append to log file
+  local file = io.open(log_file, "a")
+  if file then
+    for _, line in ipairs(log_entry) do
+      file:write(line .. "\n")
+    end
+    file:close()
+  else
+    vim.notify("Failed to write to task_log/completed.md", vim.log.levels.WARN)
+  end
+end
+
 -- Increment checkbox state in a list item
 function M.toggle_checkbox()
   local current_line = vim.fn.line(".")
   local line = vim.fn.getline(current_line)
-  
+
   -- Skip if not a list item
   if not utils.is_list_item(line) then
     return
   end
-  
-  -- Define checkbox patterns
-  local patterns = {
-    empty = " [ ]",
-    progress = " [.]",
-    closing = " [:]",
-    done = " [x]"
-  }
-  
+
   -- Get list marker (bullet symbol or number)
   local list_marker = line:match("^%s*([%d%.%-%+%*]+)%s")
   if not list_marker then
     return
   end
-  
+
   local new_line = line
-  
-  -- Forward cycle: None -> Empty -> Progress -> Closing -> Done -> None
+  local marking_as_done = false
+
+  -- Simplified 3-state cycle: None -> [ ] -> [>] -> [x] -> None
   if line:match("%[%s%]") then
-    -- Empty → Progress
-    new_line = line:gsub("%[%s%]", "[.]", 1)
-  elseif line:match("%[%.%]") then
-    -- Progress → Closing
-    new_line = line:gsub("%[%.%]", "[:]", 1)
-  elseif line:match("%[%:%]") then
-    -- Closing → Done
-    new_line = line:gsub("%[%:%]", "[x]", 1)
+    -- Empty → In Progress
+    new_line = line:gsub("%[%s%]", "[>]", 1)
+  elseif line:match("%[>%]") then
+    -- In Progress → Done
+    new_line = line:gsub("%[>%]", "[x]", 1)
+    marking_as_done = true
   elseif line:match("%[x%]") then
     -- Done → No checkbox
     local with_box = list_marker .. " [x]"
@@ -290,52 +343,44 @@ function M.toggle_checkbox()
     new_line = line:gsub(vim.pesc(with_box), without_box, 1)
   else
     -- No checkbox → Empty
-    -- Escape special characters in marker
     local escaped_marker = vim.pesc(list_marker)
-    -- Add checkbox after marker
-    new_line = line:gsub(escaped_marker .. "%s+", escaped_marker .. patterns.empty .. " ", 1)
+    new_line = line:gsub(escaped_marker .. "%s+", escaped_marker .. " [ ] ", 1)
   end
-  
+
   -- Update the line with new content
   vim.fn.setline(current_line, new_line)
+
+  -- Log task if marking as done
+  if marking_as_done then
+    log_completed_task(new_line, current_line)
+  end
 end
 
 -- Decrement checkbox state in a list item
 function M.toggle_checkbox_reverse()
   local current_line = vim.fn.line(".")
   local line = vim.fn.getline(current_line)
-  
+
   -- Skip if not a list item
   if not utils.is_list_item(line) then
     return
   end
-  
-  -- Define checkbox patterns
-  local patterns = {
-    empty = " [ ]",
-    progress = " [.]",
-    closing = " [:]",
-    done = " [x]"
-  }
-  
+
   -- Get list marker (bullet symbol or number)
   local list_marker = line:match("^%s*([%d%.%-%+%*]+)%s")
   if not list_marker then
     return
   end
-  
+
   local new_line = line
-  
-  -- Reverse cycle: None -> Done -> Closing -> Progress -> Empty -> None
+
+  -- Simplified 3-state reverse cycle: None -> [x] -> [>] -> [ ] -> None
   if line:match("%[x%]") then
-    -- Done → Closing
-    new_line = line:gsub("%[x%]", "[:]", 1)
-  elseif line:match("%[%:%]") then
-    -- Closing → Progress
-    new_line = line:gsub("%[%:%]", "[.]", 1)
-  elseif line:match("%[%.%]") then
-    -- Progress → Empty
-    new_line = line:gsub("%[%.%]", "[ ]", 1)
+    -- Done → In Progress
+    new_line = line:gsub("%[x%]", "[>]", 1)
+  elseif line:match("%[>%]") then
+    -- In Progress → Empty
+    new_line = line:gsub("%[>%]", "[ ]", 1)
   elseif line:match("%[%s%]") then
     -- Empty → No checkbox
     local with_box = list_marker .. " [ ]"
@@ -343,12 +388,10 @@ function M.toggle_checkbox_reverse()
     new_line = line:gsub(vim.pesc(with_box), without_box, 1)
   else
     -- No checkbox → Done
-    -- Escape special characters in marker
     local escaped_marker = vim.pesc(list_marker)
-    -- Add checkbox after marker
-    new_line = line:gsub(escaped_marker .. "%s+", escaped_marker .. patterns.done .. " ", 1)
+    new_line = line:gsub(escaped_marker .. "%s+", escaped_marker .. " [x] ", 1)
   end
-  
+
   -- Update the line with new content
   vim.fn.setline(current_line, new_line)
 end

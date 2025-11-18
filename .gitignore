@@ -87,3 +87,4 @@ nvim/test.tex
 himalaya/config.toml
 himalaya/config.toml.bak
 nvim/lua/neotex/plugins/tools/himalaya/spec/FAST_SYNC.md
+shell/local.sh
