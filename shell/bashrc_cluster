@@ -3,6 +3,35 @@
 # Cluster-specific environment variables
 export WORKDIR="/mnt/beegfs/workdir/jean.pachebat"
 export HOMEDIR="/mnt/beegfs/home/CMAP/jean.pachebat"
+# Monitoring tmux session on cluster
+# tmon -> attach/create a 'mon' session with 3 panes:
+#   left:  wqueue      (squeue + sacct)
+#   topR:  wsmi        (nvidia-smi on a GPU node)
+#   botR:  free shell
+tmon() {
+    local s="mon"
+
+    # If session exists, just attach
+    if tmux has-session -t "$s" 2>/dev/null; then
+        tmux attach -t "$s"
+        return
+    fi
+
+    # Create detached session with wqueue in pane 0
+    tmux new-session -d -s "$s" 'bash -lc "wqueue"'
+
+    # Right pane: wsmi (GPU monitor)
+    tmux split-window -h -t "$s:0" 'bash -lc "wsmi || bash"'
+
+    # Bottom-right pane: free shell
+    tmux split-window -v -t "$s:0.1" 'bash'
+
+    # Arrange nicely
+    tmux select-layout -t "$s:0" tiled
+
+    # Attach
+    tmux attach -t "$s"
+}
 
 wqueue() {
     if [ "$1" = "all" ]; then

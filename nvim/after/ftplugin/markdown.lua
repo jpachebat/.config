@@ -122,7 +122,7 @@ if ok_obsidian or ok_tasks then
       table.insert(mappings, { "<leader>ms", "<cmd>ObsidianSearch<CR>", desc = "search notes", icon = "󰺮", buffer = 0 })
       table.insert(mappings, { "<leader>ml", "<cmd>ObsidianBacklinks<CR>", desc = "backlinks", icon = "󰌷", buffer = 0 })
       table.insert(mappings, { "<leader>mt", "<cmd>ObsidianTags<CR>", desc = "tags", icon = "󰓹", buffer = 0 })
-      table.insert(mappings, { "<leader>md", "<cmd>ObsidianToday<CR>", desc = "daily note", icon = "󰃰", buffer = 0 })
+      table.insert(mappings, { "<leader>md", function() require("neotex.obsidian.dailies").open_daily(0, { ensure_loaded = true }) end, desc = "daily note", icon = "󰃰", buffer = 0 })
       table.insert(mappings, { "<leader>mT", "<cmd>ObsidianTemplate<CR>", desc = "insert template", icon = "󰈙", buffer = 0 })
       table.insert(mappings, { "<leader>mo", "<cmd>ObsidianOpen<CR>", desc = "open in Obsidian", icon = "󰏋", buffer = 0 })
     end

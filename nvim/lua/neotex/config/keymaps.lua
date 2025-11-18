@@ -445,7 +445,9 @@ function M.setup()
   obsidian_daily_command("ObsidianNextDay", 1, "Open the next daily note (weekends included)")
 
   -- Daily notes navigation
-  map("n", "<leader>Od", obsidian_cmd("ObsidianToday"), {}, "Open today's daily note")
+  map("n", "<leader>Od", function()
+    obsidian_dailies.open_daily(0, { ensure_loaded = true })
+  end, {}, "Open today's daily note")
   map("n", "<leader>Oy", function()
     local count = vim.v.count1
     obsidian_dailies.open_daily(-count, { ensure_loaded = true })

@@ -15,12 +15,7 @@ M.preset = {
       key = "d",
       desc = "Daily Note",
       action = function()
-        -- Load Obsidian plugin if not loaded
-        local ok_lazy, lazy = pcall(require, "lazy")
-        if ok_lazy then
-          lazy.load({ plugins = { "obsidian.nvim" } })
-        end
-        vim.cmd("ObsidianToday")
+        require("neotex.obsidian.dailies").open_daily(0, { ensure_loaded = true })
       end
     },
     { icon = "", key = "w", desc = "Weekly Note", action = ":lua require('neotex.obsidian.weekly-commands').open_this_week()" },

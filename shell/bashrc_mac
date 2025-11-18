@@ -29,21 +29,25 @@ alias remount-all='umount-cholesky >/dev/null 2>&1; umount-jeanzay-work >/dev/nu
 # tmuxp helper:
 #  - tx           : load .tmuxp.yaml in current dir
 #  - tx <project> : cd ~/proj/<project> and load its .tmuxp.yaml
+
 tx() {
     if [ -z "$1" ]; then
-        tmuxp load .tmuxp.yaml
-        return
-    fi
-
-    local proj_dir="$HOME/proj/$1"
-
-    if [ ! -d "$proj_dir" ]; then
-        echo "Project '$1' not found in ~/proj"
+        echo "Usage: tx <session_name>"
         return 1
     fi
 
-    (
-        cd "$proj_dir" || exit 1
-        tmuxp load .tmuxp.yaml
-    )
+    local name="$1"
+    local proj_dir="$HOME/proj/$name"
+    local template="$HOME/.config/tmuxp/templates/project.yaml"
+    local seshy="$HOME/.config/tmuxp/.generated_${name}.yaml"
+
+    if [ ! -d "$proj_dir" ]; then
+        echo "ERROR: directory $proj_dir does not exist."
+        return 1
+    fi
+
+    sed "s/__SESSION__/${name}/g" "$template" > "$seshy"
+
+    tmuxp load "$seshy"
+    tmux attach -t "$name"
 }

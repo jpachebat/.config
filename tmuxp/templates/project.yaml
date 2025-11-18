@@ -1,0 +1,30 @@
+session_name: __SESSION__
+start_directory: ~/proj/__SESSION__
+
+windows:
+  - window_name: cho
+    panes:
+      - shell_command:
+          - ssh cholesky
+
+  - window_name: jz
+    panes:
+      - shell_command:
+          - ssh jeanzay
+
+  - window_name: mnt
+    start_directory: ~/mounts
+    panes:
+      - shell_command:
+          - ls
+
+  - window_name: nts
+    start_directory: ~/docs/notes
+    panes:
+      - shell_command:
+          - nvim .
+
+  - window_name: loc
+    panes:
+      - shell_command:
+          - nvim .

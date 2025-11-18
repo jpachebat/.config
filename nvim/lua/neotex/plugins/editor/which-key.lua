@@ -585,7 +585,7 @@ return {
     -- Helper function to ensure obsidian is loaded
     local function obsidian_cmd(cmd)
       return function()
-        require("lazy").load({ plugins = { "obsidian.nvim" } })
+        require("lazy").load({ plugins = { "obsidian.nvim" }, wait = true })
         vim.cmd(cmd)
       end
     end
@@ -595,9 +595,9 @@ return {
       { "<leader>O", group = "obsidian" },
 
       -- Daily notes (require markdown context for Obsidian commands)
-      { "<leader>Od", obsidian_cmd("ObsidianToday"), desc = "today", cond = is_markdown },
-      { "<leader>Oy", obsidian_cmd("ObsidianPrevDay"), desc = "prev day", cond = is_markdown },
-      { "<leader>Ot", obsidian_cmd("ObsidianNextDay"), desc = "next day", cond = is_markdown },
+      { "<leader>Od", function() require("neotex.obsidian.dailies").open_daily(0, { ensure_loaded = true }) end, desc = "today", cond = is_markdown },
+      { "<leader>Oy", function() require("neotex.obsidian.dailies").open_daily(-vim.v.count1, { ensure_loaded = true }) end, desc = "prev day", cond = is_markdown },
+      { "<leader>Ot", function() require("neotex.obsidian.dailies").open_daily(vim.v.count1, { ensure_loaded = true }) end, desc = "next day", cond = is_markdown },
 
       -- Weekly notes (work from anywhere - no markdown requirement)
       { "<leader>Ow", function() require("neotex.obsidian.weekly-commands").open_this_week() end, desc = "this week" },
