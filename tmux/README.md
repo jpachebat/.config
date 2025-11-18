@@ -17,7 +17,7 @@ When SSH'ing into clusters that also run tmux, you can easily control the inner 
 
 ### How It Works
 
-**Toggle nested mode**: `C-Space n`
+**Toggle nested mode**: `F12` (industry standard)
 
 - **Normal mode** (default): Controls your local tmux session
 - **Nested mode**: All keys pass through to the remote/inner tmux session
@@ -35,7 +35,7 @@ ssh cholesky
 
 # The cluster also has tmux running
 # Enter nested mode:
-C-Space n         # → Status bar dims, shows "NESTED"
+F12               # → Status bar dims, shows "NESTED"
 
 # Now control the remote tmux:
 C-Space c         # Creates window in REMOTE tmux
@@ -43,26 +43,24 @@ C-Space w         # Shows windows in REMOTE tmux
 C-Space d         # Detaches from REMOTE tmux (back to cluster shell)
 
 # Exit nested mode to control local tmux again:
-C-Space n         # → Status bar returns to normal
+F12               # → Status bar returns to normal
 ```
 
 ### Key Bindings in Nested Mode
 
-When in nested mode (`C-Space n`), the following work for controlling the inner tmux:
+When in nested mode (`F12`), all keys pass through to the inner tmux.
+Just use tmux normally - the outer session is completely disabled.
 
 | Keys | Action |
 |------|--------|
-| `C-Space n` | Exit nested mode (return to local control) |
+| `F12` | Exit nested mode (return to local control) |
 | `C-Space c` | New window (inner) |
 | `C-Space d` | Detach (inner) |
 | `C-Space w` | List windows (inner) |
 | `C-Space 0-9` | Switch to window N (inner) |
-| `C-Space h/j/k/l` | Navigate panes (inner) |
-| `C-Space s` | List sessions (inner) |
-| `C-Space v` | Vertical split (inner) |
-| `C-Space p` | Previous window (inner) |
+| Any key | Works normally - outer tmux is off |
 
-All other keys work normally (typing, shell commands, etc.).
+No special bindings needed - the outer layer is simply turned off.
 
 ---
 
@@ -118,7 +116,7 @@ thome              # Loads ~/.config/tmuxp/global.yaml
 # Window 3: Queue monitoring
 
 # In the SSH window, enter nested mode
-C-Space n
+F12
 
 # Now attach to or create project sessions on cluster
 tmux new -s myproject
@@ -129,7 +127,7 @@ C-Space c          # New window for this project
 # ... do work ...
 
 # When done, exit nested mode
-C-Space n
+F12
 
 # Back to controlling local tmux
 C-Space 0          # Jump to dashboard window
@@ -143,13 +141,15 @@ C-Space 0          # Jump to dashboard window
    - Normal: default theme
    - Nested: dimmed with red "NESTED" indicator
 
-2. **Quick Toggle**: `C-Space n` works both ways (enter/exit)
+2. **Quick Toggle**: `F12` works both ways (enter/exit)
 
-3. **Muscle Memory**: After toggling to nested mode, just use tmux normally
+3. **Standard Practice**: F12 is the industry-standard key for nested tmux toggling
 
-4. **No Conflicts**: The inner tmux doesn't need special config - it works with any prefix
+4. **Muscle Memory**: After toggling to nested mode, just use tmux normally
 
-5. **SSH Auto-Attach**: Add to `~/.ssh/config`:
+5. **No Conflicts**: The inner tmux doesn't need special config - it works with any prefix
+
+6. **SSH Auto-Attach**: Add to `~/.ssh/config`:
    ```
    Host cholesky
        RequestTTY yes
