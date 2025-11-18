@@ -1,4 +1,5 @@
 # Machine-specific / secret config.
+# NOTE: This file is gitignored - safe to store API keys here
 # Example:
-export WANDB_API_KEY="0e768875870d095d197e5fcb0dd999f83311fa11"
+# export WANDB_API_KEY="your-key-here"
 # export OPENAI_API_KEY="..."

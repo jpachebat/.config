@@ -4,8 +4,6 @@ export VISUAL=nvim
 
 # PATH: generic, safe everywhere (Mac + Linux)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
-# Project root directory
-export WORKDIR="/mnt/beegfs/workdir/jean.pachebat"
 
 # History + vi mode
 set -o vi
@@ -14,7 +12,12 @@ set -o vi
 alias ll='ls -lh'
 alias la='ls -lha'
 alias v='nvim'
+alias vi='nvim'
 alias thome='tmuxp load ~/.config/tmuxp/global.yaml'
+
+# Directory navigation helpers
+alias ..='cd ..'
+alias ...='cd ../..'
 
 # Git shortcuts
 alias gc='git add . && git commit'
@@ -25,3 +28,21 @@ alias qpsh='git add . && git commit -m "quick push" && git push'
 # Cluster SSH (valid on Mac + remote)
 alias cho='ssh cholesky'
 alias jez='ssh jeanzay'
+
+# Outputs directory navigation (vo = vim outputs)
+vo() {
+  local outputs_dir="${1:-outputs}"
+  if [ -d "$outputs_dir" ]; then
+    cd "$outputs_dir" || return 1
+    # Find most recent file and open in vim
+    local latest=$(ls -t | head -1)
+    if [ -n "$latest" ]; then
+      nvim "$latest"
+    else
+      echo "No files in $outputs_dir"
+    fi
+  else
+    echo "Directory $outputs_dir not found"
+  fi
+}
+export -f vo

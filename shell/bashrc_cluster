@@ -1,5 +1,9 @@
 # Cluster-specific config (e.g. modules, aliases) goes here.
 
+# Cluster-specific environment variables
+export WORKDIR="/mnt/beegfs/workdir/jean.pachebat"
+export HOMEDIR="/mnt/beegfs/home/CMAP/jean.pachebat"
+
 wqueue() {
     if [ "$1" = "all" ]; then
         watch -n 3 "

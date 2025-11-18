@@ -43,7 +43,9 @@ windows:
           - cd ~/docs/notes 2>/dev/null || cd ~
           - nvim
       - shell_command:
-                                         ame: mounts
+          - clear
+
+  - name: mounts
     layout: even-horizontal
     panes:
       - shell_command:
@@ -51,4 +53,4 @@ windows:
           - mount | grep jeanzay || echo "No JZ mounts"
       - shell_command:
           - clear
-          - mount | grep c          - mount | grep c       ts"
+          - mount | grep cholesky || echo "No Cholesky mounts"
