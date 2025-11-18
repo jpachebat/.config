@@ -1,5 +1,5 @@
 # Cluster-specific config (e.g. modules, aliases) goes here.
-# Currently empty.
+
 wqueue() {
     if [ "$1" = "all" ]; then
         watch -n 3 "
@@ -21,6 +21,7 @@ wqueue() {
             sacct -u \$USER --starttime today -X --format=JobID,Start,State,Elapsed,NodeList | sort -k2 -r
         "
     fi
+}
 
 # Watch nvidia-smi on a GPU node
 #   wsmi         -> auto-pick first node where you have a job
@@ -41,5 +42,5 @@ wsmi() {
     fi
 
     echo "Connecting to $node..."
-    ssh "$node" 'watch -n 2 "nvidia-smi --query-gpu=index,name,memory.used,memory.total,utilization.gpu --format=csv,noheader,nounits"'
+    ssh -t "$node" 'watch -n 2 "nvidia-smi --query-gpu=index,name,memory.used,memory.total,utilization.gpu --format=csv,noheader,nounits"'
 }
