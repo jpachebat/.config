@@ -121,8 +121,12 @@ function M.apply(mode)
   mode = normalize(mode)
   -- Set background first
   vim.opt.background = mode
-  -- Force reload kanagawa colorscheme
-  vim.cmd("colorscheme kanagawa")
+  -- Apply classical vim colorschemes based on mode
+  if mode == "light" then
+    vim.cmd("colorscheme shine")  -- Built-in vim light theme
+  else
+    vim.cmd("colorscheme slate")  -- Built-in classic dark theme
+  end
   -- Ensure background sticks (some plugins reset it)
   vim.opt.background = mode
   return mode
